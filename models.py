@@ -1,38 +1,39 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
 from pathlib import Path
-from typing import Any
-from uuid import uuid4
-
-
-class Provenance(str, Enum):
-    SOURCE_VERIFIED = "SOURCE_VERIFIED"
-    EDITORIAL_DRAFT = "EDITORIAL_DRAFT"
-    APPROVED = "APPROVED"
-
-
-class JobStatus(str, Enum):
-    PENDING = "PENDING"
-    RUNNING = "RUNNING"
-    SUCCEEDED = "SUCCEEDED"
-    FAILED = "FAILED"
 
 
 @dataclass(slots=True)
-class Workspace:
-    slug: str
-    root: Path
-    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+class LayoutTheme:
+    page_width_in: float = 8.5
+    page_height_in: float = 11.0
+    margin_top_in: float = 0.55
+    margin_bottom_in: float = 0.55
+    margin_inside_in: float = 0.72
+    margin_outside_in: float = 0.62
+    primary_hex: str = "3E8E41"
+    charcoal_hex: str = "2E2E2E"
+    sage_hex: str = "EAF5EA"
+    yellow_hex: str = "FFF4CC"
+    grey_hex: str = "F3F3F3"
+    title_font: str = "Aptos Display"
+    body_font: str = "Aptos"
 
 
 @dataclass(slots=True)
-class Job:
-    name: str
-    payload: dict[str, Any] = field(default_factory=dict)
-    id: str = field(default_factory=lambda: str(uuid4()))
-    status: JobStatus = JobStatus.PENDING
-    result: dict[str, Any] | None = None
-    error: str | None = None
+class LayoutBuildResult:
+    output_docx: Path
+    output_pdf: Path | None
+    recipe_count: int
+    page_breaks: int
+    warnings: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict:
+        return {
+            "output_docx": str(self.output_docx),
+            "output_pdf": str(self.output_pdf) if self.output_pdf else None,
+            "recipe_count": self.recipe_count,
+            "page_breaks": self.page_breaks,
+            "warnings": self.warnings,
+        }

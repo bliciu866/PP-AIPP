@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.0.0-alpha.5
+
+- Added database-driven Layout Engine.
+- Added deterministic DOCX book generation.
+- Added optional PDF conversion and layout reports.
+- Added layout CLI and tests.
+
+
 ## 3.0.0-alpha.4
 
 - Added Gold Master DOCX parser integration.

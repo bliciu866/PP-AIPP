@@ -26,3 +26,6 @@
 
 - [x] K0.4 Gold Master Parser Integration
 - [ ] K0.5 Layout Engine Integration
+
+- [x] K0.5 — Layout Engine Integration
+- [ ] K0.6 — Publishing QA and Export Registry Integration

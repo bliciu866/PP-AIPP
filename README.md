@@ -4,7 +4,7 @@ Project Physique AI Publishing Platform v3.0 — modular publishing automation f
 
 ## Current milestone
 
-**v3.0.0-alpha.4 — Project Database & Domain Models**
+**v3.0.0-alpha.5 — Project Database & Domain Models**
 
 Implemented:
 - application kernel and lifecycle
@@ -55,3 +55,10 @@ pp-aipp parser status --book-id <BOOK_ID>
 ```
 
 The parser preserves controlled Nutrition Lock and QA records and writes an audit report to `output/parser_import/import_report.json`.
+
+
+## Layout build
+
+```bash
+pp-aipp layout build-book --database data/project.sqlite3 --output output/layout/book.docx
+```
