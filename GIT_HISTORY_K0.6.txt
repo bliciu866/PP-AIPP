@@ -1,0 +1,6 @@
+5ce3d04 ci(verification): add automated quality gates
+68ebb3b feat(layout): integrate database-driven book layout
+e4422ed feat(parser): integrate Gold Master parser
+ff6e289 feat(domain): add project database and publishing models
+0ccf051 feat(registry): add persistent project registry
+b087a9c feat(core): bootstrap PP-AIPP v3.0 core kernel

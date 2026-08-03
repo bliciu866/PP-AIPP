@@ -1,87 +1,106 @@
 from __future__ import annotations
 
-import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict
+from datetime import datetime, timezone
 from pathlib import Path
 
-from ..domain import ProjectDatabase
-from .gold_master import GoldMasterParser, ParseResult
+from .database import RegistryDatabase, decode_json, encode_json
+from .models import BookRecord, ExportRecord, HistoryRecord, ProjectRecord, ReleaseRecord
 
 
-@dataclass(slots=True)
-class ImportSummary:
-    source: str
-    book_id: str
-    parsed_recipes: int
-    imported_recipes: int
-    ingredients: int
-    method_steps: int
-    conditional_pass: int
-    errors: int
-    warnings: int
-    database: str
+def _now() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 
-class GoldMasterImportService:
-    def __init__(self, database: ProjectDatabase, parser: GoldMasterParser | None = None) -> None:
-        self.database = database
-        self.parser = parser or GoldMasterParser()
+class ProjectRegistry:
+    def __init__(self, database_path: str | Path) -> None:
+        self.db = RegistryDatabase(database_path)
 
-    def import_docx(
-        self,
-        source: str | Path,
-        *,
-        book_id: str,
-        replace: bool = True,
-        report_path: str | Path | None = None,
-        strict_collection: bool = True,
-    ) -> tuple[ImportSummary, ParseResult]:
-        result = self.parser.parse(source, book_id=book_id, strict_collection=strict_collection)
-        errors = sum(issue.severity == "ERROR" for issue in result.issues)
-        if errors:
-            summary = self._summary(result, book_id, imported=0)
-            self._write_report(result, summary, report_path)
-            return summary, result
+    def add_project(self, record: ProjectRecord) -> ProjectRecord:
+        self.db.execute(
+            "INSERT INTO projects VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (record.id, record.slug, record.name, record.brand, record.status.value,
+             record.created_at, record.updated_at, encode_json(record.metadata)),
+        )
+        self._history("project", record.id, "CREATED", {"slug": record.slug})
+        return record
 
-        imported = 0
-        for recipe in result.recipes:
-            self.database.save_recipe(recipe, replace=replace)
-            imported += 1
+    def get_project(self, slug: str) -> dict | None:
+        row = self.db.fetchone("SELECT * FROM projects WHERE slug = ?", (slug,))
+        return self._decode(row)
 
-        summary = self._summary(result, book_id, imported=imported)
-        self._write_report(result, summary, report_path)
-        return summary, result
+    def list_projects(self) -> list[dict]:
+        return [self._decode(row) for row in self.db.fetchall("SELECT * FROM projects ORDER BY created_at")]
 
-    def _summary(self, result: ParseResult, book_id: str, *, imported: int) -> ImportSummary:
-        return ImportSummary(
-            source=result.source,
-            book_id=book_id,
-            parsed_recipes=len(result.recipes),
-            imported_recipes=imported,
-            ingredients=sum(len(recipe.ingredients) for recipe in result.recipes),
-            method_steps=sum(len(recipe.method) for recipe in result.recipes),
-            conditional_pass=sum(recipe.status.value == "CONDITIONAL_PASS" for recipe in result.recipes),
-            errors=sum(issue.severity == "ERROR" for issue in result.issues),
-            warnings=sum(issue.severity == "WARNING" for issue in result.issues),
-            database=str(self.database.db.path.resolve()),
+    def add_book(self, record: BookRecord) -> BookRecord:
+        self.db.execute(
+            "INSERT INTO books VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (record.id, record.project_id, record.slug, record.title, record.language,
+             record.status.value, record.created_at, record.updated_at,
+             encode_json(record.metadata)),
+        )
+        self._history("book", record.id, "CREATED", {"slug": record.slug})
+        return record
+
+    def list_books(self, project_slug: str | None = None) -> list[dict]:
+        if project_slug:
+            rows = self.db.fetchall(
+                "SELECT b.* FROM books b JOIN projects p ON p.id=b.project_id WHERE p.slug=? ORDER BY b.created_at",
+                (project_slug,),
+            )
+        else:
+            rows = self.db.fetchall("SELECT * FROM books ORDER BY created_at")
+        return [self._decode(row) for row in rows]
+
+    def add_release(self, record: ReleaseRecord) -> ReleaseRecord:
+        self.db.execute(
+            "INSERT INTO releases VALUES (?, ?, ?, ?, ?)",
+            (record.id, record.book_id, record.version, record.notes, record.created_at),
+        )
+        self._history("book", record.book_id, "RELEASE_CREATED", {"version": record.version})
+        return record
+
+    def add_export(self, record: ExportRecord) -> ExportRecord:
+        self.db.execute(
+            "INSERT INTO exports VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (record.id, record.book_id, record.format, record.path, record.status.value,
+             record.created_at, record.completed_at, encode_json(record.metadata)),
+        )
+        self._history("book", record.book_id, "EXPORT_RECORDED", {"format": record.format})
+        return record
+
+    def history(self, entity_type: str | None = None, entity_id: str | None = None) -> list[dict]:
+        sql = "SELECT * FROM history"
+        params: list[str] = []
+        clauses = []
+        if entity_type:
+            clauses.append("entity_type = ?")
+            params.append(entity_type)
+        if entity_id:
+            clauses.append("entity_id = ?")
+            params.append(entity_id)
+        if clauses:
+            sql += " WHERE " + " AND ".join(clauses)
+        sql += " ORDER BY created_at"
+        return [self._decode(row) for row in self.db.fetchall(sql, params)]
+
+    def summary(self) -> dict:
+        return self.db.health()
+
+    def _history(self, entity_type: str, entity_id: str, action: str, payload: dict) -> None:
+        record = HistoryRecord(entity_type=entity_type, entity_id=entity_id, action=action, payload=payload)
+        self.db.execute(
+            "INSERT INTO history VALUES (?, ?, ?, ?, ?, ?)",
+            (record.id, record.entity_type, record.entity_id, record.action,
+             encode_json(record.payload), record.created_at),
         )
 
     @staticmethod
-    def _write_report(
-        result: ParseResult,
-        summary: ImportSummary,
-        report_path: str | Path | None,
-    ) -> None:
-        if report_path is None:
-            return
-        target = Path(report_path)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(
-            json.dumps(
-                {"import": asdict(summary), "parse": result.to_dict()},
-                indent=2,
-                ensure_ascii=False,
-                default=str,
-            ),
-            encoding="utf-8",
-        )
+    def _decode(row: dict | None) -> dict | None:
+        if row is None:
+            return None
+        result = dict(row)
+        for key in ("metadata_json", "payload_json"):
+            if key in result:
+                result[key.removesuffix("_json")] = decode_json(result.pop(key))
+        return result

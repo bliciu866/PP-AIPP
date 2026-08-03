@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 from dataclasses import asdict
 
 from .core.kernel import Kernel
 from .core.models import Job
 from .registry import BookRecord, ProjectRecord, ReleaseRecord
 from .parser import GoldMasterImportService
+from .verification import VerificationConfig, VerificationRunner, write_html, write_json, write_markdown
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -60,6 +62,12 @@ def build_parser() -> argparse.ArgumentParser:
     import_docx.add_argument("--no-replace", action="store_true")
     parser_status = parser_sub.add_parser("status")
     parser_status.add_argument("--book-id", required=True)
+
+    verify = commands.add_parser("verify")
+    verify.add_argument("--gold-master")
+    verify.add_argument("--report-dir", default="reports/latest")
+    verify.add_argument("--skip-lint", action="store_true")
+    verify.add_argument("--skip-gold-master", action="store_true")
     return parser
 
 
@@ -103,6 +111,24 @@ def main(argv: list[str] | None = None) -> int:
                 emit(asdict(kernel.registry.add_release(ReleaseRecord(args.book_id, args.version, args.notes))))
             elif command == "history":
                 emit(kernel.registry.history(args.entity_type, args.entity_id))
+        elif args.command == "verify":
+            root = Path.cwd()
+            report_dir = root / args.report_dir
+            gold_master = root / args.gold_master if args.gold_master else None
+            report = VerificationRunner(
+                VerificationConfig(
+                    project_root=root,
+                    report_dir=report_dir,
+                    gold_master=gold_master,
+                    run_lint=not args.skip_lint,
+                    run_gold_master=not args.skip_gold_master,
+                )
+            ).run()
+            write_json(report, report_dir / "verification_report.json")
+            write_markdown(report, report_dir / "verification_report.md")
+            write_html(report, report_dir / "verification_report.html")
+            emit(report.to_dict())
+            return 0 if report.passed else 1
         elif args.command == "parser":
             if args.parser_command == "import-docx":
                 service = GoldMasterImportService(kernel.project_database)

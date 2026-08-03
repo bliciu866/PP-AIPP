@@ -1,0 +1,3 @@
+compileall: PASSED
+ruff: READY FOR CI (not installed in the isolated build environment)
+GitHub Actions installs and executes Ruff on Python 3.11, 3.12 and 3.13.

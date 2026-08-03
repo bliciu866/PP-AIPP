@@ -4,7 +4,7 @@ Project Physique AI Publishing Platform v3.0 — modular publishing automation f
 
 ## Current milestone
 
-**v3.0.0-alpha.5 — Project Database & Domain Models**
+**v3.0.0-alpha.6 — Verification Framework**
 
 Implemented:
 - application kernel and lifecycle
@@ -23,6 +23,19 @@ Implemented:
 - transactional SQLite project database
 - provenance-aware source/editorial/approved states
 - ingredient search and recipe filtering
+
+### Verification framework
+
+- compile, test and lint gates
+- JSON, Markdown and HTML verification reports
+- GitHub Actions on Python 3.11–3.13
+- optional controlled Gold Master integration test
+
+```bash
+pp-aipp verify --report-dir reports/local
+```
+
+A real Gold Master check is only marked `PASSED` when the source DOCX is explicitly supplied.
 
 ## Quick start
 

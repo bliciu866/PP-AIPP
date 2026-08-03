@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.0-alpha.6] - 2026-08-03
+
+### Added
+- Verification runner with compile, pytest, Ruff and optional Gold Master checks.
+- JSON, Markdown and HTML reports.
+- GitHub Actions test matrix for Python 3.11–3.13.
+- `pp-aipp verify` CLI command and CI artifacts.
+
 ## 3.0.0-alpha.5
 
 - Added database-driven Layout Engine.
