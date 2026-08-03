@@ -1,0 +1,1 @@
+feat(desktop): add PySide6 beta application framework

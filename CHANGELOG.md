@@ -1,4 +1,13 @@
+
 # Changelog
+
+## 3.0.0-beta.1
+
+- Added the first PySide6/Qt desktop application framework.
+- Added Project Explorer, Build Console, toolbar, menus and Settings.
+- Added project and Gold Master selection flows.
+- Added desktop entry points and desktop state tests.
+
 
 ## 3.0.0-alpha.8
 
