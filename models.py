@@ -1,86 +1,68 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from enum import Enum
+from enum import StrEnum
+from pathlib import Path
 from typing import Any
-from uuid import uuid4
+
+
+class CheckStatus(StrEnum):
+    PASSED = "PASSED"
+    FAILED = "FAILED"
+    SKIPPED = "SKIPPED"
+
+
+@dataclass(slots=True)
+class VerificationCheck:
+    name: str
+    status: CheckStatus
+    duration_seconds: float
+    command: list[str] = field(default_factory=list)
+    return_code: int | None = None
+    stdout: str = ""
+    stderr: str = ""
+    details: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        value = asdict(self)
+        value["status"] = self.status.value
+        return value
+
+
+@dataclass(slots=True)
+class VerificationReport:
+    version: str
+    started_at: str
+    finished_at: str
+    checks: list[VerificationCheck]
+    environment: dict[str, str]
+
+    @property
+    def passed(self) -> bool:
+        return all(check.status in {CheckStatus.PASSED, CheckStatus.SKIPPED} for check in self.checks)
+
+    @property
+    def status(self) -> str:
+        return "PASSED" if self.passed else "FAILED"
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "version": self.version,
+            "status": self.status,
+            "started_at": self.started_at,
+            "finished_at": self.finished_at,
+            "environment": self.environment,
+            "checks": [check.to_dict() for check in self.checks],
+        }
 
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-class ProjectStatus(str, Enum):
-    ACTIVE = "ACTIVE"
-    PAUSED = "PAUSED"
-    ARCHIVED = "ARCHIVED"
-
-
-class BookStatus(str, Enum):
-    DRAFT = "DRAFT"
-    PRODUCTION = "PRODUCTION"
-    PUBLISHED = "PUBLISHED"
-    ARCHIVED = "ARCHIVED"
-
-
-class ExportStatus(str, Enum):
-    QUEUED = "QUEUED"
-    SUCCEEDED = "SUCCEEDED"
-    FAILED = "FAILED"
-
-
-@dataclass(slots=True)
-class ProjectRecord:
-    slug: str
-    name: str
-    brand: str | None = None
-    status: ProjectStatus = ProjectStatus.ACTIVE
-    id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = field(default_factory=utc_now)
-    updated_at: str = field(default_factory=utc_now)
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass(slots=True)
-class BookRecord:
-    project_id: str
-    slug: str
-    title: str
-    language: str = "en-GB"
-    status: BookStatus = BookStatus.DRAFT
-    id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = field(default_factory=utc_now)
-    updated_at: str = field(default_factory=utc_now)
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass(slots=True)
-class ReleaseRecord:
-    book_id: str
-    version: str
-    notes: str = ""
-    id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = field(default_factory=utc_now)
-
-
-@dataclass(slots=True)
-class ExportRecord:
-    book_id: str
-    format: str
-    path: str
-    status: ExportStatus = ExportStatus.QUEUED
-    id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = field(default_factory=utc_now)
-    completed_at: str | None = None
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass(slots=True)
-class HistoryRecord:
-    entity_type: str
-    entity_id: str
-    action: str
-    payload: dict[str, Any] = field(default_factory=dict)
-    id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = field(default_factory=utc_now)
+def relative(path: Path, root: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(root.resolve()))
+    except ValueError:
+        return str(path.resolve())

@@ -1,3 +1,16 @@
+# pp-aipp 3.0.0a8 — Milestone A Stable Alpha
+
+- Commit: `fe21af4355fa`
+- Verification: **PASSED**
+- Built: 2026-08-03T18:44:09.771710+00:00
+
+## Milestone scope
+
+This package is generated from the actual repository state by the PP-AIPP Milestone Pack Builder.
+It contains source code, tests, documentation and CI configuration selected by the release policy.
+
+## Changelog snapshot
+
 # Changelog
 
 ## 3.0.0-alpha.8

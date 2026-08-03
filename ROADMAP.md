@@ -31,3 +31,5 @@
 - [ ] K0.6 — Publishing QA and Export Registry Integration
 
 - [x] K0.7 — CI Release Gate
+
+- [x] Production Milestone Pack Builder (alpha.8)

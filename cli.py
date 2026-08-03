@@ -10,6 +10,7 @@ from .core.models import Job
 from .registry import BookRecord, ProjectRecord, ReleaseRecord
 from .parser import GoldMasterImportService
 from .verification import VerificationConfig, VerificationRunner, write_html, write_json, write_markdown
+from .release import MilestonePackBuilder, PackConfig
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -68,6 +69,15 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--report-dir", default="reports/latest")
     verify.add_argument("--skip-lint", action="store_true")
     verify.add_argument("--skip-gold-master", action="store_true")
+
+    release_pack = commands.add_parser("release-pack")
+    release_pack.add_argument("--milestone", required=True)
+    release_pack.add_argument("--output-dir", default="dist/releases")
+    release_pack.add_argument("--version")
+    release_pack.add_argument("--verification-report")
+    release_pack.add_argument("--allow-dirty", action="store_true")
+    release_pack.add_argument("--skip-verification", action="store_true")
+    release_pack.add_argument("--git-bundle", action="store_true")
     return parser
 
 
@@ -129,6 +139,21 @@ def main(argv: list[str] | None = None) -> int:
             write_html(report, report_dir / "verification_report.html")
             emit(report.to_dict())
             return 0 if report.passed else 1
+        elif args.command == "release-pack":
+            root = Path.cwd()
+            result = MilestonePackBuilder(
+                PackConfig(
+                    repository=root,
+                    output_dir=root / args.output_dir,
+                    milestone=args.milestone,
+                    version=args.version,
+                    require_clean_git=not args.allow_dirty,
+                    require_verification=not args.skip_verification,
+                    verification_report=(root / args.verification_report if args.verification_report else None),
+                    include_git_bundle=args.git_bundle,
+                )
+            ).build()
+            emit(result.to_dict())
         elif args.command == "parser":
             if args.parser_command == "import-docx":
                 service = GoldMasterImportService(kernel.project_database)

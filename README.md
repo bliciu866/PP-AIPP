@@ -80,3 +80,11 @@ pp-aipp layout build-book --database data/project.sqlite3 --output output/layout
 ## CI release gate
 
 Every push is checked on Python 3.11–3.13. The release gate requires compilation, Ruff, tests, at least 70% coverage, CLI smoke checks, package building and clean wheel installation. See `SETUP_GITHUB_ACTIONS.md` when uploading from Android.
+
+## Milestone Pack Builder
+
+```bash
+pp-aipp release-pack --milestone "Milestone A Stable Alpha" --verification-report reports/k0.7/verification_report.json --git-bundle
+```
+
+The builder packages the actual repository state and blocks release when Git is dirty or verification has not passed.

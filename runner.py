@@ -133,7 +133,7 @@ class VerificationRunner:
             checks.append(self._command_check("ruff", [sys.executable, "-m", "ruff", "check", "src", "tests"]))
         checks.append(self._gold_master_check())
         return VerificationReport(
-            version="3.0.0-alpha.7",
+            version="3.0.0-alpha.8",
             started_at=started_at,
             finished_at=utc_now(),
             checks=checks,

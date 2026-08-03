@@ -1,0 +1,7 @@
+PP-AIPP v3.0.0-alpha.8
+Sprint K0.8 — Production Milestone Pack Builder
+
+pytest: 27 passed
+compileall: passed
+Milestone Pack Builder integration tests: passed
+Ruff local execution: not run (ruff unavailable in current runtime); configured for GitHub Actions.
