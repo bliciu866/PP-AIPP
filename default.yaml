@@ -1,0 +1,16 @@
+platform:
+  name: PP-AIPP
+  version: 3.0.0-alpha.2
+  environment: development
+paths:
+  workspace_root: workspaces
+  log_dir: logs
+  registry_db: data/registry.sqlite3
+plugins:
+  enabled: []
+ai:
+  default_provider: null
+  require_approval_for_generated_content: true
+logging:
+  level: INFO
+  filename: pp-aipp.log

@@ -10,6 +10,7 @@ from .jobs import JobEngine
 from .logging import configure_logging
 from .plugins import PluginManager
 from .workspace import WorkspaceManager
+from ..registry import ProjectRegistry
 
 
 @dataclass(slots=True)
@@ -19,6 +20,7 @@ class KernelHealth:
     config: str
     workspace_root: str
     plugins_registered: int
+    registry_status: str
 
 
 class Kernel:
@@ -33,6 +35,7 @@ class Kernel:
         self.plugins = PluginManager()
         self.jobs = JobEngine()
         self.ai = AIGateway()
+        self.registry = ProjectRegistry(self.config.get("paths.registry_db", "data/registry.sqlite3"))
         self.started = False
 
     def start(self) -> None:
@@ -55,4 +58,5 @@ class Kernel:
             config=str(self.config.source),
             workspace_root=str(self.workspaces.root.resolve()),
             plugins_registered=len(self.plugins.list()),
+            registry_status=str(self.registry.summary()["status"]),
         )

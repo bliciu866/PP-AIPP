@@ -4,7 +4,7 @@ Project Physique AI Publishing Platform v3.0 — modular publishing automation f
 
 ## Current milestone
 
-**v3.0.0-alpha.1 — Core Kernel**
+**v3.0.0-alpha.2 — Persistent Project Registry**
 
 Implemented:
 - application kernel and lifecycle

@@ -1,0 +1,9 @@
+{
+  "status": "READY",
+  "database": "/mnt/data/PP-AIPP_v3.0-alpha.2_Persistent_Registry/data/registry.sqlite3",
+  "projects": 0,
+  "books": 0,
+  "releases": 0,
+  "exports": 0,
+  "history": 0
+}
