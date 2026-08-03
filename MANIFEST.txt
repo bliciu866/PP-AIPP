@@ -1,0 +1,8 @@
+Milestone A
+- Alpha.1 Core Kernel
+- Alpha.2 Persistent Project Registry
+- Alpha.3 Domain Models
+- Alpha.4 Parser Integration
+- Alpha.5 Layout Engine
+- Alpha.6 Verification Framework
+- Alpha.7 CI Release Gate
