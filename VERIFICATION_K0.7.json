@@ -1,0 +1,56 @@
+{
+  "version": "3.0.0-alpha.7",
+  "status": "PASSED",
+  "started_at": "2026-08-03T18:17:42.585499+00:00",
+  "finished_at": "2026-08-03T18:17:45.759943+00:00",
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux-6.12.13-x86_64-with-glibc2.41",
+    "executable": "/opt/pyvenv/bin/python"
+  },
+  "checks": [
+    {
+      "name": "compile",
+      "status": "PASSED",
+      "duration_seconds": 0.5743,
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "compileall",
+        "-q",
+        "src"
+      ],
+      "return_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "details": {}
+    },
+    {
+      "name": "unit_and_integration_tests",
+      "status": "PASSED",
+      "duration_seconds": 2.6,
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "return_code": 0,
+      "stdout": ".......................                                                  [100%]\n",
+      "stderr": "",
+      "details": {}
+    },
+    {
+      "name": "gold_master_integration",
+      "status": "SKIPPED",
+      "duration_seconds": 0.0,
+      "command": [],
+      "return_code": null,
+      "stdout": "",
+      "stderr": "",
+      "details": {
+        "reason": "disabled"
+      }
+    }
+  ]
+}

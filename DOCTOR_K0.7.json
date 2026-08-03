@@ -1,0 +1,9 @@
+{
+  "status": "READY",
+  "version": "3.0.0-alpha.7",
+  "config": "config/default.yaml",
+  "workspace_root": "/mnt/data/PP-AIPP_v3.0-alpha.7_CI_Release_Gate/workspaces",
+  "plugins_registered": 0,
+  "registry_status": "READY",
+  "project_database_status": "READY"
+}

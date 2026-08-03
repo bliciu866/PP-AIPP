@@ -4,7 +4,7 @@ Project Physique AI Publishing Platform v3.0 — modular publishing automation f
 
 ## Current milestone
 
-**v3.0.0-alpha.6 — Verification Framework**
+**v3.0.0-alpha.7 — Verification Framework**
 
 Implemented:
 - application kernel and lifecycle
@@ -75,3 +75,8 @@ The parser preserves controlled Nutrition Lock and QA records and writes an audi
 ```bash
 pp-aipp layout build-book --database data/project.sqlite3 --output output/layout/book.docx
 ```
+
+
+## CI release gate
+
+Every push is checked on Python 3.11–3.13. The release gate requires compilation, Ruff, tests, at least 70% coverage, CLI smoke checks, package building and clean wheel installation. See `SETUP_GITHUB_ACTIONS.md` when uploading from Android.

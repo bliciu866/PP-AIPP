@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.0-alpha.7
+
+- Added a three-job GitHub Actions quality and release gate.
+- Added Python 3.11–3.13 test matrix, Ruff, coverage threshold and CLI smoke tests.
+- Added package build and clean wheel-install verification.
+- Added release consistency checks and mobile workflow activation instructions.
+
 ## [3.0.0-alpha.6] - 2026-08-03
 
 ### Added
