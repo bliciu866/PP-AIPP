@@ -1,0 +1,3 @@
+ff6e289 feat(domain): add project database and publishing models
+0ccf051 feat(registry): add persistent project registry
+b087a9c feat(core): bootstrap PP-AIPP v3.0 core kernel

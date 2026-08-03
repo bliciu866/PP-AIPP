@@ -4,7 +4,7 @@ Project Physique AI Publishing Platform v3.0 — modular publishing automation f
 
 ## Current milestone
 
-**v3.0.0-alpha.2 — Persistent Project Registry**
+**v3.0.0-alpha.3 — Project Database & Domain Models**
 
 Implemented:
 - application kernel and lifecycle
@@ -15,6 +15,14 @@ Implemented:
 - structured logging
 - AI gateway interface with provenance states
 - CLI and automated tests
+
+
+### Domain layer
+
+- canonical Recipe, Ingredient, Nutrition, QA and Asset models
+- transactional SQLite project database
+- provenance-aware source/editorial/approved states
+- ingredient search and recipe filtering
 
 ## Quick start
 

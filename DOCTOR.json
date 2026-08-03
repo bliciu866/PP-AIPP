@@ -1,0 +1,7 @@
+{
+  "status": "READY",
+  "version": "3.0.0a1",
+  "config": "config/default.yaml",
+  "workspace_root": "/mnt/data/PP-AIPP_v3.0_Core_Kernel/workspaces",
+  "plugins_registered": 0
+}

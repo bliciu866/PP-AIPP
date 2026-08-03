@@ -1,0 +1,74 @@
+{
+  "health": {
+    "status": "READY",
+    "database": "/mnt/data/PP-AIPP_v3.0-alpha.3_Project_Database/data/domain_demo.sqlite3",
+    "recipes": 1,
+    "ingredients": 2,
+    "method_steps": 0,
+    "nutrition": 1,
+    "recipe_badges": 2,
+    "qa_records": 0,
+    "assets": 0
+  },
+  "recipe": {
+    "id": "90518365-a4f1-4830-8a73-07bab872c2e4",
+    "book_id": "book-30dfl",
+    "recipe_id": "PP-R001",
+    "title": "High-Protein Blueberry Overnight Oats",
+    "meal": "Breakfast",
+    "servings": 1,
+    "description": "",
+    "status": "NUTRITION_LOCKED",
+    "meal_prep": "",
+    "chef_tip": "",
+    "ingredient_swap": "",
+    "provenance": "SOURCE_VERIFIED",
+    "metadata": {},
+    "ingredients": [
+      {
+        "id": "d13eba11-27b5-442b-b2c8-9c9b0debef02",
+        "recipe_pk": "90518365-a4f1-4830-8a73-07bab872c2e4",
+        "position": 1,
+        "name": "Porridge oats",
+        "quantity": 60.0,
+        "unit": "g",
+        "source_ref": null,
+        "preparation_state": null,
+        "provenance": "SOURCE_VERIFIED",
+        "metadata": {}
+      },
+      {
+        "id": "518c7067-8366-4580-b93b-bf894b9fa897",
+        "recipe_pk": "90518365-a4f1-4830-8a73-07bab872c2e4",
+        "position": 2,
+        "name": "Quark",
+        "quantity": 250.0,
+        "unit": "g",
+        "source_ref": null,
+        "preparation_state": null,
+        "provenance": "SOURCE_VERIFIED",
+        "metadata": {}
+      }
+    ],
+    "method": [],
+    "nutrition": {
+      "id": "f6491b0d-1daf-4ef0-a2f9-0978bd0c048c",
+      "recipe_pk": "90518365-a4f1-4830-8a73-07bab872c2e4",
+      "energy_kcal": 583.0,
+      "protein_g": 50.7,
+      "carbohydrate_g": 66.4,
+      "fat_g": 14.5,
+      "fibre_g": 7.4,
+      "serving_basis": "per serving",
+      "locked": true,
+      "provenance": "SOURCE_VERIFIED",
+      "metadata": {}
+    },
+    "badges": [
+      "High Protein",
+      "Breakfast"
+    ],
+    "qa_records": [],
+    "assets": []
+  }
+}

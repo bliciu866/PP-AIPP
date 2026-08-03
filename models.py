@@ -3,84 +3,36 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
 
-def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+class Provenance(str, Enum):
+    SOURCE_VERIFIED = "SOURCE_VERIFIED"
+    EDITORIAL_DRAFT = "EDITORIAL_DRAFT"
+    APPROVED = "APPROVED"
 
 
-class ProjectStatus(str, Enum):
-    ACTIVE = "ACTIVE"
-    PAUSED = "PAUSED"
-    ARCHIVED = "ARCHIVED"
-
-
-class BookStatus(str, Enum):
-    DRAFT = "DRAFT"
-    PRODUCTION = "PRODUCTION"
-    PUBLISHED = "PUBLISHED"
-    ARCHIVED = "ARCHIVED"
-
-
-class ExportStatus(str, Enum):
-    QUEUED = "QUEUED"
+class JobStatus(str, Enum):
+    PENDING = "PENDING"
+    RUNNING = "RUNNING"
     SUCCEEDED = "SUCCEEDED"
     FAILED = "FAILED"
 
 
 @dataclass(slots=True)
-class ProjectRecord:
+class Workspace:
     slug: str
+    root: Path
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
+@dataclass(slots=True)
+class Job:
     name: str
-    brand: str | None = None
-    status: ProjectStatus = ProjectStatus.ACTIVE
-    id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = field(default_factory=utc_now)
-    updated_at: str = field(default_factory=utc_now)
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass(slots=True)
-class BookRecord:
-    project_id: str
-    slug: str
-    title: str
-    language: str = "en-GB"
-    status: BookStatus = BookStatus.DRAFT
-    id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = field(default_factory=utc_now)
-    updated_at: str = field(default_factory=utc_now)
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass(slots=True)
-class ReleaseRecord:
-    book_id: str
-    version: str
-    notes: str = ""
-    id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = field(default_factory=utc_now)
-
-
-@dataclass(slots=True)
-class ExportRecord:
-    book_id: str
-    format: str
-    path: str
-    status: ExportStatus = ExportStatus.QUEUED
-    id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = field(default_factory=utc_now)
-    completed_at: str | None = None
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass(slots=True)
-class HistoryRecord:
-    entity_type: str
-    entity_id: str
-    action: str
     payload: dict[str, Any] = field(default_factory=dict)
     id: str = field(default_factory=lambda: str(uuid4()))
-    created_at: str = field(default_factory=utc_now)
+    status: JobStatus = JobStatus.PENDING
+    result: dict[str, Any] | None = None
+    error: str | None = None

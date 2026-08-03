@@ -1,10 +1,18 @@
+# Changelog
+
+## 3.0.0-alpha.3
+
+- Added canonical publishing domain models.
+- Added transactional SQLite project database.
+- Added Nutrition Lock, QA, badge and asset persistence.
+- Added recipe filtering and ingredient search.
+
 ## 3.0.0-alpha.2
 
 - Added persistent SQLite project registry.
 - Added project, book, release, export and history models.
 - Added registry CLI and integrity tests.
 
-# Changelog
 
 ## [3.0.0-alpha.1] - 2026-08-03
 

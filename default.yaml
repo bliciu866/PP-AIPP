@@ -6,6 +6,7 @@ paths:
   workspace_root: workspaces
   log_dir: logs
   registry_db: data/registry.sqlite3
+  project_db: data/project.sqlite3
 plugins:
   enabled: []
 ai:
