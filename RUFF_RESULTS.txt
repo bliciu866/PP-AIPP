@@ -1,0 +1,1 @@
+ruff unavailable in runtime; GitHub Actions will run it
