@@ -1,0 +1,4 @@
+e4422ed (HEAD -> main, tag: v3.0.0-alpha.4) feat(parser): integrate Gold Master parser
+ff6e289 feat(domain): add project database and publishing models
+0ccf051 (tag: v3.0.0-alpha.2) feat(registry): add persistent project registry
+b087a9c feat(core): bootstrap PP-AIPP v3.0 core kernel

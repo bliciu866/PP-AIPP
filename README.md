@@ -4,7 +4,7 @@ Project Physique AI Publishing Platform v3.0 — modular publishing automation f
 
 ## Current milestone
 
-**v3.0.0-alpha.3 — Project Database & Domain Models**
+**v3.0.0-alpha.4 — Project Database & Domain Models**
 
 Implemented:
 - application kernel and lifecycle
@@ -45,3 +45,13 @@ pytest
 5. The platform is multi-project and multi-brand.
 
 See [ROADMAP.md](ROADMAP.md) and [docs/architecture/core-kernel.md](docs/architecture/core-kernel.md).
+
+
+## Gold Master import
+
+```bash
+pp-aipp parser import-docx GoldMaster.docx --book-id <BOOK_ID>
+pp-aipp parser status --book-id <BOOK_ID>
+```
+
+The parser preserves controlled Nutrition Lock and QA records and writes an audit report to `output/parser_import/import_report.json`.

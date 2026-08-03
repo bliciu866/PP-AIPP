@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.0-alpha.4
+
+- Added Gold Master DOCX parser integration.
+- Added transactional import into the project database.
+- Added collection validation and JSON import reporting.
+- Added parser CLI commands and tests.
+
 ## 3.0.0-alpha.3
 
 - Added canonical publishing domain models.

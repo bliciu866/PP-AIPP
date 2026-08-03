@@ -7,6 +7,7 @@ from dataclasses import asdict
 from .core.kernel import Kernel
 from .core.models import Job
 from .registry import BookRecord, ProjectRecord, ReleaseRecord
+from .parser import GoldMasterImportService
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -49,6 +50,16 @@ def build_parser() -> argparse.ArgumentParser:
     history = registry_sub.add_parser("history")
     history.add_argument("--entity-type")
     history.add_argument("--entity-id")
+
+    parser_cmd = commands.add_parser("parser")
+    parser_sub = parser_cmd.add_subparsers(dest="parser_command", required=True)
+    import_docx = parser_sub.add_parser("import-docx")
+    import_docx.add_argument("source")
+    import_docx.add_argument("--book-id", required=True)
+    import_docx.add_argument("--report", default="output/parser_import/import_report.json")
+    import_docx.add_argument("--no-replace", action="store_true")
+    parser_status = parser_sub.add_parser("status")
+    parser_status.add_argument("--book-id", required=True)
     return parser
 
 
@@ -92,6 +103,23 @@ def main(argv: list[str] | None = None) -> int:
                 emit(asdict(kernel.registry.add_release(ReleaseRecord(args.book_id, args.version, args.notes))))
             elif command == "history":
                 emit(kernel.registry.history(args.entity_type, args.entity_id))
+        elif args.command == "parser":
+            if args.parser_command == "import-docx":
+                service = GoldMasterImportService(kernel.project_database)
+                summary, result = service.import_docx(
+                    args.source,
+                    book_id=args.book_id,
+                    replace=not args.no_replace,
+                    report_path=args.report,
+                )
+                emit({"summary": asdict(summary), "issues": [asdict(issue) for issue in result.issues]})
+                return 1 if summary.errors else 0
+            elif args.parser_command == "status":
+                recipes = kernel.project_database.db.fetchall(
+                    "SELECT recipe_id, title, meal, status FROM recipes WHERE book_id=? ORDER BY recipe_id",
+                    (args.book_id,),
+                )
+                emit({"book_id": args.book_id, "recipe_count": len(recipes), "recipes": recipes})
         return 0
     finally:
         kernel.stop()

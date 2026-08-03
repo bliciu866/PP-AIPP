@@ -23,3 +23,6 @@
 - [ ] Layout decision assistant
 - [ ] QA assistant
 - [ ] Marketing and KDP package plugins
+
+- [x] K0.4 Gold Master Parser Integration
+- [ ] K0.5 Layout Engine Integration

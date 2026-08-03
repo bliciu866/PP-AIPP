@@ -1,0 +1,327 @@
+{
+  "summary": {
+    "source": "/mnt/data/Project_Physique_Gold_Master_v4.1_Recipe_Badge_System.docx",
+    "book_id": "30-days-fat-loss-v4.1",
+    "parsed_recipes": 80,
+    "imported_recipes": 80,
+    "ingredients": 589,
+    "method_steps": 183,
+    "conditional_pass": 11,
+    "errors": 0,
+    "warnings": 50,
+    "database": "/mnt/data/PP-AIPP_v3.0-alpha.4_Parser_Integration/data/parser_import.sqlite3"
+  },
+  "health": {
+    "status": "READY",
+    "database": "/mnt/data/PP-AIPP_v3.0-alpha.4_Parser_Integration/data/parser_import.sqlite3",
+    "recipes": 80,
+    "ingredients": 589,
+    "method_steps": 183,
+    "nutrition": 80,
+    "recipe_badges": 378,
+    "qa_records": 80,
+    "assets": 0
+  },
+  "issues": [
+    {
+      "severity": "WARNING",
+      "code": "MEAL_INFERRED",
+      "message": "Breakfast",
+      "recipe_id": "PP-R001"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R001"
+    },
+    {
+      "severity": "WARNING",
+      "code": "MEAL_INFERRED",
+      "message": "Dinner",
+      "recipe_id": "PP-R002"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R002"
+    },
+    {
+      "severity": "WARNING",
+      "code": "MEAL_INFERRED",
+      "message": "Dinner",
+      "recipe_id": "PP-R003"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R003"
+    },
+    {
+      "severity": "WARNING",
+      "code": "MEAL_INFERRED",
+      "message": "Breakfast",
+      "recipe_id": "PP-R004"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R004"
+    },
+    {
+      "severity": "WARNING",
+      "code": "MEAL_INFERRED",
+      "message": "Lunch",
+      "recipe_id": "PP-R005"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R005"
+    },
+    {
+      "severity": "WARNING",
+      "code": "MEAL_INFERRED",
+      "message": "Dinner",
+      "recipe_id": "PP-R006"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R006"
+    },
+    {
+      "severity": "WARNING",
+      "code": "MEAL_INFERRED",
+      "message": "Breakfast",
+      "recipe_id": "PP-R007"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R007"
+    },
+    {
+      "severity": "WARNING",
+      "code": "MEAL_INFERRED",
+      "message": "Breakfast",
+      "recipe_id": "PP-R008"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R008"
+    },
+    {
+      "severity": "WARNING",
+      "code": "MEAL_INFERRED",
+      "message": "Lunch",
+      "recipe_id": "PP-R009"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R009"
+    },
+    {
+      "severity": "WARNING",
+      "code": "MEAL_INFERRED",
+      "message": "Lunch",
+      "recipe_id": "PP-R010"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R010"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R031"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R032"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R033"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R034"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R035"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R036"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R037"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R038"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R039"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R040"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R041"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R042"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R043"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R044"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R045"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R046"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R047"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R048"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R049"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R050"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R051"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R052"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R053"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R054"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R055"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R056"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R057"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R058"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R059"
+    },
+    {
+      "severity": "WARNING",
+      "code": "METHOD_MISSING",
+      "message": "No method in source",
+      "recipe_id": "PP-R060"
+    }
+  ]
+}

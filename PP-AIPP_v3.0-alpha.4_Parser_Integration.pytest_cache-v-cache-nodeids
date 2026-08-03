@@ -1,0 +1,17 @@
+[
+  "tests/test_domain_models.py::test_domain_models_hold_recipe_data",
+  "tests/test_gold_master_parser.py::test_parser_creates_domain_recipe",
+  "tests/test_gold_master_parser.py::test_parser_rejects_missing_file",
+  "tests/test_jobs_ai_plugins.py::test_ai_gateway_marks_draft",
+  "tests/test_jobs_ai_plugins.py::test_job_engine_success",
+  "tests/test_jobs_ai_plugins.py::test_plugin_manager",
+  "tests/test_kernel.py::test_kernel_lifecycle",
+  "tests/test_parser_import_service.py::test_import_service_persists_recipe",
+  "tests/test_project_database.py::test_project_database_persists_complete_recipe",
+  "tests/test_project_database.py::test_project_database_search_and_filter",
+  "tests/test_project_database.py::test_recipe_save_is_atomic",
+  "tests/test_registry.py::test_foreign_keys_reject_orphan_book",
+  "tests/test_registry.py::test_registry_persists_projects_books_and_releases",
+  "tests/test_workspace.py::test_create_workspace",
+  "tests/test_workspace.py::test_reject_invalid_slug"
+]
