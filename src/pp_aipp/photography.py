@@ -7,7 +7,7 @@ import shutil
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 SUPPORTED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 RECIPE_IMAGE = re.compile(r"^(PP-R\d{3})(?:_hero)?$", re.IGNORECASE)
@@ -35,11 +35,13 @@ class PhotoImportResult:
     needs_crop: int
     rejected: int
     missing: int
+    replaced: int = 0
+    auto_prepared: int = 0
 
 
 def _inspect(path: Path, recipe_id: str) -> PhotoAsset:
     with Image.open(path) as image:
-        width, height = image.size
+        width, height = ImageOps.exif_transpose(image).size
     ratio = width / height if height else 0
     ratio_ok = abs(ratio - TARGET_RATIO) <= RATIO_TOLERANCE
     resolution_ok = width >= 1200 and height >= 1500
@@ -50,6 +52,50 @@ def _inspect(path: Path, recipe_id: str) -> PhotoAsset:
     else:
         status, note = "READY", "4:5 production asset"
     return PhotoAsset(recipe_id, path.name, width, height, round(ratio, 4), status, note)
+
+
+def _production_crop_size(width: int, height: int) -> tuple[int, int]:
+    """Return the largest centred 4:5 crop available inside an image."""
+    if width / height > TARGET_RATIO:
+        return round(height * TARGET_RATIO), height
+    return width, round(width / TARGET_RATIO)
+
+
+def _prepare(candidate: Path, destination: Path) -> bool:
+    """Apply EXIF rotation and a centred 4:5 crop when resolution permits it."""
+    with Image.open(candidate) as opened:
+        image = ImageOps.exif_transpose(opened)
+        crop_width, crop_height = _production_crop_size(*image.size)
+        if crop_width < 1200 or crop_height < 1500:
+            shutil.copy2(candidate, destination)
+            return False
+        left = (image.width - crop_width) // 2
+        top = (image.height - crop_height) // 2
+        prepared = image.crop((left, top, left + crop_width, top + crop_height))
+        prepared = prepared.resize((1200, 1500), Image.Resampling.LANCZOS)
+        if destination.suffix.lower() in {".jpg", ".jpeg"}:
+            prepared.convert("RGB").save(destination, quality=94, optimize=True)
+        else:
+            prepared.save(destination)
+        return image.size != (1200, 1500) or prepared.size != image.size
+
+
+def _existing_assets(images_dir: Path, expected: list[str]) -> list[PhotoAsset]:
+    assets: list[PhotoAsset] = []
+    for recipe_id in expected:
+        matches = sorted(
+            path for path in images_dir.glob(f"{recipe_id}.*")
+            if path.suffix.lower() in SUPPORTED_EXTENSIONS
+        )
+        if not matches:
+            continue
+        try:
+            assets.append(_inspect(matches[0], recipe_id))
+        except (OSError, ValueError):
+            assets.append(PhotoAsset(
+                recipe_id, matches[0].name, 0, 0, 0, "INVALID", "Unreadable image",
+            ))
+    return assets
 
 
 def import_photo_assets(
@@ -67,9 +113,11 @@ def import_photo_assets(
     images_dir.mkdir(parents=True, exist_ok=True)
     expected = [value.upper() for value in (recipe_ids or [f"PP-R{i:03d}" for i in range(1, 81)])]
 
-    imported: list[PhotoAsset] = []
+    imported_recipe_ids: list[str] = []
     rejected: list[dict[str, str]] = []
     seen: set[str] = set()
+    replaced = 0
+    auto_prepared = 0
     for candidate in sorted(source.rglob("*")):
         if not candidate.is_file() or candidate.suffix.lower() not in SUPPORTED_EXTENSIONS:
             continue
@@ -85,36 +133,45 @@ def import_photo_assets(
             rejected.append({"filename": candidate.name, "reason": "Duplicate recipe image"})
             continue
         try:
-            asset = _inspect(candidate, recipe_id)
+            _inspect(candidate, recipe_id)
         except (OSError, ValueError):
             rejected.append({"filename": candidate.name, "reason": "Unreadable or invalid image"})
             continue
+        existing = [
+            path for path in images_dir.glob(f"{recipe_id}.*")
+            if path.suffix.lower() in SUPPORTED_EXTENSIONS
+        ]
+        replaced += bool(existing)
+        for old_asset in existing:
+            old_asset.unlink()
         destination = images_dir / f"{recipe_id}{candidate.suffix.lower()}"
-        shutil.copy2(candidate, destination)
-        imported.append(PhotoAsset(
-            asset.recipe_id, destination.name, asset.width, asset.height,
-            asset.aspect_ratio, asset.status, asset.note,
-        ))
+        auto_prepared += _prepare(candidate, destination)
+        imported_recipe_ids.append(recipe_id)
         seen.add(recipe_id)
 
-    present = {item.recipe_id for item in imported}
+    inventory = _existing_assets(images_dir, expected)
+    present = {item.recipe_id for item in inventory}
     missing = [recipe_id for recipe_id in expected if recipe_id not in present]
     report_path = root / "qa" / "photography_readiness_report.json"
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    ready = sum(item.status == "READY" for item in imported)
-    needs_crop = sum(item.status != "READY" for item in imported)
+    ready = sum(item.status == "READY" for item in inventory)
+    needs_crop = sum(item.status != "READY" for item in inventory)
     report_path.write_text(json.dumps({
-        "schema_version": 1,
+        "schema_version": 2,
         "expected_images": len(expected),
-        "imported_images": len(imported),
+        "imported_this_batch": len(imported_recipe_ids),
+        "replaced_this_batch": replaced,
+        "auto_prepared_this_batch": auto_prepared,
+        "imported_images": len(inventory),
         "ready_images": ready,
         "images_needing_attention": needs_crop,
         "rejected_files": len(rejected),
         "missing_images": len(missing),
-        "assets": [asdict(item) for item in imported],
+        "assets": [asdict(item) for item in inventory],
         "rejected": rejected,
         "missing_recipe_ids": missing,
     }, indent=2) + "\n", encoding="utf-8")
     return PhotoImportResult(
-        images_dir, report_path, len(imported), ready, needs_crop, len(rejected), len(missing)
+        images_dir, report_path, len(imported_recipe_ids), ready, needs_crop,
+        len(rejected), len(missing), replaced, auto_prepared,
     )

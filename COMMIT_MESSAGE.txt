@@ -1,2 +1,2 @@
 ci(windows): activate PP-AIPP EXE workflow
-PP-AIPP v3.0.0-beta.6 B2.3 Photography Asset Pipeline
+PP-AIPP v3.0.0-beta.6 B2.4 Batch Photography Production

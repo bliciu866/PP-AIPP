@@ -119,3 +119,9 @@
 - Added bulk photography import with automatic PP-R001–PP-R080 assignment.
 - Added 4:5 crop, resolution, duplicate and naming validation.
 - Added photography readiness reporting and export-package integration.
+
+# 3.0.0b6.post5 — Beta B2.4
+
+- Added incremental photography batches that preserve existing project coverage.
+- Added automatic EXIF rotation and production-safe 4:5 preparation.
+- Added controlled replacement of earlier recipe images and QA report schema v2.

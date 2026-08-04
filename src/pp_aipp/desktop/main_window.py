@@ -99,7 +99,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2.3"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2.4"))
 
     def import_photos(self) -> None:
         if not self.state.project_path:
@@ -112,6 +112,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.console.write("Importing and validating photography assets...")
             result = import_photo_assets(self.state.project_path, folder)
             self.console.write(f"Imported photos: {result.imported}")
+            self.console.write(f"Automatically prepared to 4:5: {result.auto_prepared}")
+            self.console.write(f"Replaced existing photos: {result.replaced}")
             self.console.write(f"Production ready: {result.ready}")
             self.console.write(f"Need crop / resolution review: {result.needs_crop}")
             self.console.write(f"Missing recipe photos: {result.missing}")
@@ -120,6 +122,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self,
                 "PP-AIPP Photography Import",
                 f"Imported: {result.imported}\nReady: {result.ready}\n"
+                f"Auto-prepared: {result.auto_prepared}\nReplaced: {result.replaced}\n"
                 f"Needs attention: {result.needs_crop}\nMissing: {result.missing}\n\n"
                 f"Saved to: {result.images_dir}",
             )
