@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pp-aipp"
-version = "3.0.0b6.post1"
+version = "3.0.0b6.post2"
 description = "Project Physique AI Publishing Platform"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [{name = "Project Physique"}]
-dependencies = ["PyYAML>=6.0", "python-docx>=1.1.0"]
+dependencies = ["PyYAML>=6.0", "python-docx>=1.1.0", "reportlab>=4.2"]
 
 [project.optional-dependencies]
 desktop = ["PySide6>=6.7,<7"]

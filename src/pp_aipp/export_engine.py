@@ -10,12 +10,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from . import __version__
+from .pdf_export import build_publishing_pdf
 
 
 @dataclass(frozen=True, slots=True)
 class ExportResult:
     export_dir: Path
     book_path: Path
+    pdf_path: Path
+    publishing_readme_path: Path
     manifest_path: Path
     package_path: Path
     file_count: int
@@ -42,11 +45,31 @@ def export_book_package(project_root: str | Path, built_book: str | Path) -> Exp
     export_dir.mkdir(parents=True, exist_ok=True)
     stem = source.stem.removesuffix("_Built")
     book_path = export_dir / f"{stem}_Export.docx"
+    pdf_path = export_dir / f"{stem}_Print.pdf"
+    publishing_readme_path = export_dir / "PUBLISHING_README.txt"
     manifest_path = export_dir / "export_manifest.json"
     package_path = export_dir / f"{stem}_Export_Package.zip"
     shutil.copy2(source, book_path)
+    build_publishing_pdf(root / "data" / "project.sqlite3", pdf_path)
 
-    files: list[tuple[Path, str]] = [(book_path, book_path.name)]
+    publishing_readme_path.write_text(
+        "PP-AIPP Publishing Pack\n"
+        "=========================\n\n"
+        "PRINT / AMAZON KDP\n"
+        "Use the *_Print.pdf file as the US Letter 8.5 x 11 inch interior master.\n"
+        "Complete a final KDP preview before publication and add the final cover separately.\n\n"
+        "DIGITAL / ETSY\n"
+        "Use the PDF for customer delivery. Keep the DOCX as an editable production master.\n\n"
+        "INTEGRITY\n"
+        "Verify every distributed file against export_manifest.json.\n",
+        encoding="utf-8",
+    )
+
+    files: list[tuple[Path, str]] = [
+        (book_path, book_path.name),
+        (pdf_path, pdf_path.name),
+        (publishing_readme_path, publishing_readme_path.name),
+    ]
     qa_dir = root / "qa"
     for report_name in ("gold_master_import_report.json", "layout_build_report.json"):
         report = qa_dir / report_name
@@ -74,6 +97,8 @@ def export_book_package(project_root: str | Path, built_book: str | Path) -> Exp
     return ExportResult(
         export_dir=export_dir,
         book_path=book_path,
+        pdf_path=pdf_path,
+        publishing_readme_path=publishing_readme_path,
         manifest_path=manifest_path,
         package_path=package_path,
         file_count=len(files),

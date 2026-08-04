@@ -1,6 +1,13 @@
 
 # Changelog
 
+## 3.0.0b6.post2 — 2026-08-04
+
+- Added native PDF rendering without Microsoft Word or LibreOffice.
+- Added a US Letter 8.5 x 11 inch publishing PDF to every export package.
+- Added KDP/Etsy publishing guidance to the verified ZIP package.
+- Added PDF generation verification and updated the Windows artifact name for B2.1.
+
 ## 3.0.0b6.post1 — 2026-08-04
 
 - Delivered Beta B2 Export Engine integration.
