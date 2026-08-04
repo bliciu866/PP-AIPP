@@ -91,7 +91,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.1"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.3"))
 
     def _apply_stage(self, stage: BuildStage, progress: int, message: str) -> None:
         self.state.set_stage(stage, progress, message)

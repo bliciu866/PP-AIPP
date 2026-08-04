@@ -1,8 +1,19 @@
-# PP-AIPP Beta 2 - Windows App Builder
+# PP-AIPP v3.0.0-beta.3 — Windows App Builder
 
-This milestone prepares automatic Windows executable builds using GitHub Actions and PyInstaller.
+PP-AIPP is the Project Physique AI Publishing Platform desktop framework.
 
-After pushing this project to GitHub:
-- Actions builds the application
-- Produces PP-AIPP.exe as an artifact
-- Future milestone will add Setup.exe installer
+## Easiest Windows start
+
+Double-click `INSTALL_AND_RUN.bat`. It creates an isolated environment, installs the desktop dependencies, and starts PP-AIPP. Later use `RUN_PP-AIPP.bat`.
+
+## Developer installation
+
+```powershell
+python -m pip install -e ".[desktop,dev,build]"
+pp-aipp doctor
+pp-aipp-desktop
+```
+
+## Windows EXE
+
+Push to GitHub `main`. The workflow `.github/workflows/windows-exe.yml` runs tests and builds `PP-AIPP.exe`. Download it from the completed GitHub Actions run under **Artifacts**.

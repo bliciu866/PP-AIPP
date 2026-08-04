@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 import os
 import yaml
+from importlib.resources import files
 
 
 @dataclass(slots=True)
@@ -15,6 +16,9 @@ class ConfigManager:
     @classmethod
     def load(cls, path: str | Path = "config/default.yaml") -> "ConfigManager":
         source = Path(path)
+        if not source.exists():
+            packaged = files("pp_aipp.resources").joinpath("default.yaml")
+            source = Path(str(packaged))
         if not source.exists():
             raise FileNotFoundError(f"Configuration file not found: {source}")
         raw = yaml.safe_load(source.read_text(encoding="utf-8")) or {}
