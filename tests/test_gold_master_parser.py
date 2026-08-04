@@ -56,3 +56,39 @@ def test_parser_creates_domain_recipe(tmp_path: Path) -> None:
 def test_parser_rejects_missing_file() -> None:
     with pytest.raises(ValueError):
         GoldMasterParser().parse("missing.docx", book_id="book-1")
+
+
+def test_parser_reads_inline_and_table_controlled_content(tmp_path: Path) -> None:
+    source = tmp_path / "content-sections.docx"
+    build_sample(source)
+    document = Document(source)
+    # Add a second controlled recipe with inline and table-based content.
+    document.add_paragraph("PP-R002")
+    document.add_paragraph("Table Method Recipe")
+    document.add_paragraph("Dinner | High Protein | UK CoFID Verified")
+    ingredients = document.add_table(rows=2, cols=2)
+    ingredients.cell(0, 0).text = "Ingredient"
+    ingredients.cell(0, 1).text = "Quantity"
+    ingredients.cell(1, 0).text = "Chicken breast"
+    ingredients.cell(1, 1).text = "180 g"
+    content = document.add_table(rows=2, cols=2)
+    content.cell(0, 0).text = "Method"
+    content.cell(0, 1).text = "1. Season the chicken.\n2. Roast until cooked through."
+    content.cell(1, 0).text = "Meal Prep"
+    content.cell(1, 1).text = "Chill and refrigerate for up to 3 days."
+    document.add_paragraph("Nutrition per serving")
+    nutrition = document.add_table(rows=2, cols=5)
+    for i, label in enumerate(("Energy", "Protein", "Carbs", "Fat", "Fibre")):
+        nutrition.cell(0, i).text = label
+    for i, value in enumerate(("450 kcal", "45 g", "35 g", "12 g", "6 g")):
+        nutrition.cell(1, i).text = value
+    document.add_paragraph("QA Note: Controlled table content.")
+    document.save(source)
+
+    result = GoldMasterParser().parse(source, book_id="book-1", strict_collection=False)
+    recipe = next(recipe for recipe in result.recipes if recipe.recipe_id == "PP-R002")
+    assert [step.text for step in recipe.method] == [
+        "Season the chicken.",
+        "Roast until cooked through.",
+    ]
+    assert recipe.meal_prep == "Chill and refrigerate for up to 3 days."

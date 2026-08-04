@@ -41,6 +41,7 @@ def test_pipeline_builds_docx_database_and_reports(tmp_path):
     assert result.import_summary.imported_recipes == 1
     assert result.layout.recipe_count == 1
     assert result.layout.output_docx.is_file()
+    assert result.layout.output_docx.parent == project / "build"
     assert result.database_path.is_file()
     assert result.import_report_path.is_file()
     assert result.layout_report_path.is_file()

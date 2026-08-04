@@ -172,20 +172,25 @@ class GoldMasterParser:
 
         for block in blocks:
             if isinstance(block, Table):
-                self._consume_table(recipe, rows(block))
+                section = self._consume_table(recipe, rows(block), section)
                 continue
             text = clean(block.text)
             if not text:
                 continue
             lower = text.lower()
-            if lower == "ingredients":
+            heading, inline = self._section_heading(text)
+            if heading == "ingredients":
                 section = "ingredients"
                 continue
-            if lower == "method":
+            if heading == "method":
                 section = "method"
+                if inline:
+                    self._append_method(recipe, inline)
                 continue
-            if lower == "meal prep":
+            if heading == "meal_prep":
                 section = "meal_prep"
+                if inline:
+                    recipe.meal_prep = f"{recipe.meal_prep} {inline}".strip()
                 continue
             if lower in {"nutrition per serving", "nutrition"}:
                 section = "nutrition"
@@ -205,9 +210,7 @@ class GoldMasterParser:
                 elif not recipe.description and self._looks_like_description(text):
                     recipe.description = text
             elif section == "method":
-                recipe.method.append(
-                    MethodStep(number=len(recipe.method) + 1, text=re.sub(r"^\d+\.\s*", "", text))
-                )
+                self._append_method(recipe, text)
             elif section == "meal_prep":
                 recipe.meal_prep = f"{recipe.meal_prep} {text}".strip()
             elif section == "qa":
@@ -250,9 +253,53 @@ class GoldMasterParser:
         )
         return recipe, issues
 
-    def _consume_table(self, recipe: Recipe, table_rows: list[list[str]]) -> None:
+    @staticmethod
+    def _section_heading(text: str) -> tuple[str | None, str]:
+        """Recognise plain, numbered and inline controlled-source headings."""
+        match = re.match(
+            r"^(?:\d+[.)]\s*)?(ingredients?|method|directions?|instructions?|"
+            r"meal[\s-]*prep(?:aration)?)(?:\s*[:\-–—]\s*(.*))?$",
+            clean(text),
+            re.IGNORECASE,
+        )
+        if not match:
+            return None, ""
+        label = match.group(1).lower().replace("-", " ")
+        section = "ingredients" if label.startswith("ingredient") else (
+            "meal_prep" if label.startswith("meal") else "method"
+        )
+        return section, clean(match.group(2) or "")
+
+    @staticmethod
+    def _append_method(recipe: Recipe, text: str) -> None:
+        value = clean(re.sub(r"^(?:step\s*)?\d+[.):\-]\s*", "", text, flags=re.IGNORECASE))
+        if value:
+            recipe.method.append(MethodStep(number=len(recipe.method) + 1, text=value))
+
+    def _consume_table(
+        self, recipe: Recipe, table_rows: list[list[str]], section: str = "header"
+    ) -> str:
         if not table_rows:
-            return
+            return section
+
+        # Some Gold Masters store Method/Meal Prep as labelled table rows.
+        consumed_content = False
+        for row in table_rows:
+            if not row:
+                continue
+            heading, inline = self._section_heading(row[0])
+            if heading in {"method", "meal_prep"}:
+                values = [inline, *row[1:]]
+                for value in filter(None, map(clean, values)):
+                    if heading == "method":
+                        for step in filter(None, re.split(r"\s*(?:\r?\n|(?=\d+[.)]\s+))", value)):
+                            self._append_method(recipe, step)
+                    else:
+                        recipe.meal_prep = f"{recipe.meal_prep} {value}".strip()
+                section = heading
+                consumed_content = True
+        if consumed_content:
+            return section
         flat = [cell for row in table_rows for cell in row]
         info_text = " | ".join(flat)
         if any(label in info_text for label in ("Meal", "Servings", "Status")):
@@ -268,7 +315,7 @@ class GoldMasterParser:
             servings = number(pairs.get("Servings", ""))
             if servings is not None and servings > 0:
                 recipe.servings = int(servings)
-            return
+            return section
 
         if "Ingredient" in flat and "Quantity" in flat:
             for row in table_rows[1:]:
@@ -285,7 +332,7 @@ class GoldMasterParser:
                         provenance=Provenance.SOURCE_VERIFIED,
                     )
                 )
-            return
+            return section
 
         if "Energy" in flat and "Protein" in flat:
             labels = table_rows[0]
@@ -307,6 +354,7 @@ class GoldMasterParser:
                     fibre_g=parsed["fibre"],
                     locked=True,
                 )
+        return section
 
     @staticmethod
     def _parse_quantity(text: str) -> tuple[float | None, str | None]:

@@ -39,15 +39,16 @@ def build_gold_master_book(
 
     data_dir = root / "data"
     qa_dir = root / "qa"
+    build_dir = root / "build"
     exports_dir = root / "exports"
-    for directory in (data_dir, qa_dir, exports_dir):
+    for directory in (data_dir, qa_dir, build_dir, exports_dir):
         directory.mkdir(parents=True, exist_ok=True)
 
     book_id = _book_id(root)
     database_path = data_dir / "project.sqlite3"
     import_report = qa_dir / "gold_master_import_report.json"
     layout_report = qa_dir / "layout_build_report.json"
-    output_docx = exports_dir / "Project_Physique_30_Days_Fat_Loss_Built.docx"
+    output_docx = build_dir / "Project_Physique_30_Days_Fat_Loss_Built.docx"
 
     database = ProjectDatabase(database_path)
     importer = GoldMasterImportService(database)

@@ -92,7 +92,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.5 / B1.3"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.5 / B1.4"))
 
     def _apply_stage(self, stage: BuildStage, progress: int, message: str) -> None:
         self.state.set_stage(stage, progress, message)
@@ -167,6 +167,11 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             self.console.write(f"Database: {result.database_path}")
             self.console.write(f"QA report: {result.layout_report_path}")
+            self.console.write(f"Built book: {result.layout.output_docx}")
+            self.console.write(
+                f"Content coverage: {result.import_summary.method_steps} method steps; "
+                f"{result.import_summary.warnings} source warnings."
+            )
             self.state.built_book_path = result.layout.output_docx
             self.state.export_path = result.layout.output_docx.parent
             self._apply_stage(
@@ -174,12 +179,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 80,
                 f"Book built: {result.layout.output_docx.name}",
             )
-            QtWidgets.QMessageBox.information(
-                self,
-                "PP-AIPP Build Complete",
-                f"Built {result.layout.recipe_count} recipes.\n\n"
-                f"Output:\n{result.layout.output_docx}",
-            )
+            self._show_build_complete(result.layout.output_docx, result.layout.recipe_count)
         except (OSError, ValueError) as exc:
             self._apply_stage(BuildStage.FAILED, 0, f"Build failed: {exc}")
             self._warn(str(exc))
@@ -196,6 +196,22 @@ class MainWindow(QtWidgets.QMainWindow):
         dialog = SettingsDialog(self.state.export_path, self)
         if dialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             self.console.write(f"Export folder: {dialog.export_path.text()}")
+
+    def _show_build_complete(self, output_path, recipe_count: int) -> None:
+        box = QtWidgets.QMessageBox(self)
+        box.setWindowTitle("PP-AIPP Build Complete")
+        box.setIcon(QtWidgets.QMessageBox.Icon.Information)
+        box.setText(f"Built {recipe_count} recipes.")
+        box.setInformativeText(f"Saved to:\n{output_path}")
+        open_book = box.addButton("Open Book", QtWidgets.QMessageBox.ButtonRole.ActionRole)
+        open_folder = box.addButton("Open Folder", QtWidgets.QMessageBox.ButtonRole.ActionRole)
+        box.addButton(QtWidgets.QMessageBox.StandardButton.Close)
+        box.exec()
+        clicked = box.clickedButton()
+        if clicked is open_book:
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(str(output_path)))
+        elif clicked is open_folder:
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(str(output_path.parent)))
 
     def _warn(self, text: str) -> None:
         QtWidgets.QMessageBox.warning(self, "PP-AIPP", text)
