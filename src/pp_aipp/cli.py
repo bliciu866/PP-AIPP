@@ -2,15 +2,21 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 from dataclasses import asdict
+from pathlib import Path
 
 from .core.kernel import Kernel
 from .core.models import Job
-from .registry import BookRecord, ProjectRecord, ReleaseRecord
 from .parser import GoldMasterImportService
-from .verification import VerificationConfig, VerificationRunner, write_html, write_json, write_markdown
+from .registry import BookRecord, ProjectRecord, ReleaseRecord
 from .release import MilestonePackBuilder, PackConfig
+from .verification import (
+    VerificationConfig,
+    VerificationRunner,
+    write_html,
+    write_json,
+    write_markdown,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:

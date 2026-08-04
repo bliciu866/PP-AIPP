@@ -5,9 +5,8 @@ import hashlib
 import json
 import os
 import subprocess
-import tempfile
 import tomllib
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
@@ -117,7 +116,7 @@ class MilestonePackBuilder:
                 "",
                 f"- Commit: `{commit}`",
                 f"- Verification: **{verification}**",
-                f"- Built: {datetime.now(timezone.utc).isoformat()}",
+                f"- Built: {datetime.now(UTC).isoformat()}",
                 "",
                 "## Milestone scope",
                 "",
@@ -170,7 +169,7 @@ class MilestonePackBuilder:
             "commit": commit,
             "dirty": dirty,
             "verification_status": verification,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "file_count": len(entries),
             "total_bytes": sum(entry.size for entry in entries),
             "warnings": self.warnings,

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from .database import RegistryDatabase, decode_json, encode_json
@@ -9,7 +8,7 @@ from .models import BookRecord, ExportRecord, HistoryRecord, ProjectRecord, Rele
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 class ProjectRegistry:

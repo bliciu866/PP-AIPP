@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from pp_aipp.registry import BookRecord, ProjectRecord, ProjectRegistry, ReleaseRecord
 
 
@@ -19,9 +21,5 @@ def test_registry_persists_projects_books_and_releases(tmp_path: Path) -> None:
 
 def test_foreign_keys_reject_orphan_book(tmp_path: Path) -> None:
     registry = ProjectRegistry(tmp_path / "registry.sqlite3")
-    try:
+    with pytest.raises(Exception, match="FOREIGN KEY"):
         registry.add_book(BookRecord("missing", "orphan", "Orphan"))
-    except Exception as exc:
-        assert "FOREIGN KEY" in str(exc).upper()
-    else:
-        raise AssertionError("Expected foreign key failure")

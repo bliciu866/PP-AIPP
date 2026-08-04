@@ -1,12 +1,15 @@
 """Creation and deterministic import of Gold Master source documents."""
 from __future__ import annotations
+
 import json
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
 from .manifest import GoldMasterManifest
 from .schema import GoldMasterSchema, ValidationResult
+
 
 @dataclass(frozen=True, slots=True)
 class ImportResult:
@@ -20,7 +23,7 @@ class GoldMasterProject:
         self.root = Path(root).expanduser().resolve()
 
     @classmethod
-    def create(cls, root: str | Path, name: str | None = None) -> "GoldMasterProject":
+    def create(cls, root: str | Path, name: str | None = None) -> GoldMasterProject:
         project = cls(root)
         project.root.mkdir(parents=True, exist_ok=True)
         for directory in GoldMasterSchema.REQUIRED_DIRECTORIES:

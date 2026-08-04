@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
+from importlib.resources import files
 from pathlib import Path
 from typing import Any
-import os
+
 import yaml
-from importlib.resources import files
 
 
 @dataclass(slots=True)
@@ -14,7 +15,7 @@ class ConfigManager:
     source: Path
 
     @classmethod
-    def load(cls, path: str | Path = "config/default.yaml") -> "ConfigManager":
+    def load(cls, path: str | Path = "config/default.yaml") -> ConfigManager:
         source = Path(path)
         if not source.exists():
             packaged = files("pp_aipp.resources").joinpath("default.yaml")

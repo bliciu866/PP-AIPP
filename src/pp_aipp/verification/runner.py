@@ -6,9 +6,9 @@ import platform
 import subprocess
 import sys
 import time
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 from .models import CheckStatus, VerificationCheck, VerificationReport, utc_now
 

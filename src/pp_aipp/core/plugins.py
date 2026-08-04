@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from importlib.metadata import entry_points
-from typing import Iterable
 
 from pp_aipp.plugins.base import Plugin
 

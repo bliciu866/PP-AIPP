@@ -4,14 +4,15 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from pp_aipp import __version__
+
+from ..domain import ProjectDatabase
+from ..registry import ProjectRegistry
 from .ai import AIGateway
 from .config import ConfigManager
 from .jobs import JobEngine
 from .logging import configure_logging
 from .plugins import PluginManager
 from .workspace import WorkspaceManager
-from ..registry import ProjectRegistry
-from ..domain import ProjectDatabase
 
 
 @dataclass(slots=True)

@@ -11,6 +11,13 @@ from .models import (
 from .service import ProjectRegistry
 
 __all__ = [
-    "BookRecord", "BookStatus", "ExportRecord", "ExportStatus", "HistoryRecord",
-    "ProjectRecord", "ProjectStatus", "ProjectRegistry", "ReleaseRecord",
+    "BookRecord",
+    "BookStatus",
+    "ExportRecord",
+    "ExportStatus",
+    "HistoryRecord",
+    "ProjectRecord",
+    "ProjectRegistry",
+    "ProjectStatus",
+    "ReleaseRecord",
 ]

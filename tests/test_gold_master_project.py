@@ -1,7 +1,10 @@
-from pathlib import Path
 import json
+from pathlib import Path
+
 import pytest
+
 from pp_aipp.gold_master import GoldMasterProject, GoldMasterSchema
+
 
 def test_create_project_builds_standard_structure(tmp_path: Path) -> None:
     project = GoldMasterProject.create(tmp_path / "book", "30 Days Fat Loss")

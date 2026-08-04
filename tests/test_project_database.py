@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from pp_aipp.domain import (
     Asset,
     AssetKind,
@@ -64,10 +66,6 @@ def test_recipe_save_is_atomic(tmp_path: Path) -> None:
     database = ProjectDatabase(tmp_path / "project.sqlite3")
     recipe = sample_recipe()
     recipe.ingredients.append(Ingredient("Broken", -1, "g"))
-    try:
+    with pytest.raises(Exception):  # noqa: B017 - database backend exception is the contract
         database.save_recipe(recipe)
-    except Exception:
-        pass
-    else:
-        raise AssertionError("Expected database constraint failure")
     assert database.summary()["recipes"] == 0

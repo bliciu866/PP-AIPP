@@ -12,7 +12,7 @@ class JobEngine:
         try:
             job.result = handler(job.payload)
             job.status = JobStatus.SUCCEEDED
-        except Exception as exc:  # boundary: job failures become structured state
+        except Exception as exc:  # noqa: BLE001 - boundary converts failures to state
             job.error = str(exc)
             job.status = JobStatus.FAILED
         return job

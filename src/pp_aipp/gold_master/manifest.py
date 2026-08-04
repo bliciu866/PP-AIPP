@@ -1,10 +1,12 @@
 """Manifest generation for imported controlled sources."""
 from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+
 
 @dataclass(frozen=True, slots=True)
 class GoldMasterManifest:
@@ -15,7 +17,7 @@ class GoldMasterManifest:
     imported_at: str
 
     @classmethod
-    def from_source(cls, source: str | Path, schema_version: str) -> "GoldMasterManifest":
+    def from_source(cls, source: str | Path, schema_version: str) -> GoldMasterManifest:
         path = Path(source)
         return cls(schema_version, path.name, hashlib.sha256(path.read_bytes()).hexdigest(), path.stat().st_size, datetime.now(UTC).isoformat())
 

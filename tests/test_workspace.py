@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import pytest
 
 from pp_aipp.core.workspace import WorkspaceManager

@@ -1,7 +1,9 @@
 """Validation rules for a PP-AIPP Gold Master project."""
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from pathlib import Path
+
 
 @dataclass(frozen=True, slots=True)
 class ValidationIssue:

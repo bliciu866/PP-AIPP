@@ -3,8 +3,8 @@ from __future__ import annotations
 import sys
 
 from ..core.kernel import Kernel
-from .qt import QtWidgets
 from .main_window import MainWindow
+from .qt import QtWidgets
 
 
 def main(argv: list[str] | None = None) -> int:

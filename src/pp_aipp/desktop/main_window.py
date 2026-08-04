@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from pathlib import Path
+from pp_aipp.gold_master import GoldMasterProject
 
 from .qt import QtCore, QtGui, QtWidgets
 from .settings_dialog import SettingsDialog
 from .state import BuildStage, DesktopState
 from .theme import APP_STYLESHEET
 from .widgets import BuildConsole, ProjectTree
-from pp_aipp.gold_master import GoldMasterProject
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -92,7 +91,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.4"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.4.1"))
 
     def _apply_stage(self, stage: BuildStage, progress: int, message: str) -> None:
         self.state.set_stage(stage, progress, message)

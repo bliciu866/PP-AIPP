@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .qt import QtCore, QtWidgets
+from .qt import QtWidgets
 
 
 class ProjectTree(QtWidgets.QTreeWidget):

@@ -14,7 +14,7 @@ class DemoProvider:
 class DemoPlugin(Plugin):
     metadata = PluginMetadata("demo", "1.0", "Demo plugin")
     def activate(self, kernel: object) -> None:
-        setattr(kernel, "demo_active", True)
+        kernel.demo_active = True
 
 
 def test_job_engine_success() -> None:

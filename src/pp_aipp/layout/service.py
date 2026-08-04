@@ -37,6 +37,6 @@ class LayoutEngine:
         binary=shutil.which("libreoffice") or shutil.which("soffice")
         if not binary: return None
         out=docx.parent/"rendered"; out.mkdir(parents=True,exist_ok=True)
-        completed=subprocess.run([binary,"--headless","--convert-to","pdf","--outdir",str(out),str(docx)],capture_output=True,text=True,timeout=180)
+        completed=subprocess.run([binary,"--headless","--convert-to","pdf","--outdir",str(out),str(docx)],capture_output=True,text=True,timeout=180,check=False)
         candidate=out/(docx.stem+".pdf")
         return candidate if completed.returncode==0 and candidate.exists() else None
