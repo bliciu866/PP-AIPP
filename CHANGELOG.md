@@ -114,3 +114,8 @@
 - Provider-neutral AI gateway contracts and provenance model.
 - CLI commands: `doctor`, `workspace create/list`, `plugins list`, `job demo`.
 - Initial test suite and GitHub Actions workflow.
+# 3.0.0b6.post4 — Beta B2.3
+
+- Added bulk photography import with automatic PP-R001–PP-R080 assignment.
+- Added 4:5 crop, resolution, duplicate and naming validation.
+- Added photography readiness reporting and export-package integration.

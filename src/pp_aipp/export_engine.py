@@ -82,6 +82,9 @@ def export_book_package(project_root: str | Path, built_book: str | Path) -> Exp
         report = qa_dir / report_name
         if report.is_file():
             files.append((report, f"qa/{report.name}"))
+    photography_report = qa_dir / "photography_readiness_report.json"
+    if photography_report.is_file():
+        files.append((photography_report, f"qa/{photography_report.name}"))
 
     manifest = {
         "schema_version": 1,

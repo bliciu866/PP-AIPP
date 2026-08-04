@@ -3,6 +3,7 @@ from __future__ import annotations
 from pp_aipp.build_pipeline import build_gold_master_book
 from pp_aipp.export_engine import export_book_package
 from pp_aipp.gold_master import GoldMasterProject
+from pp_aipp.photography import import_photo_assets
 
 from .qt import QtCore, QtGui, QtWidgets
 from .settings_dialog import SettingsDialog
@@ -45,6 +46,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.export_action = QtGui.QAction("Export", self)
         self.export_action.triggered.connect(self.export_book)
 
+        self.photos_action = QtGui.QAction("Import Photos", self)
+        self.photos_action.triggered.connect(self.import_photos)
+
         self.settings_action = QtGui.QAction("Settings", self)
         self.settings_action.triggered.connect(self.open_settings)
 
@@ -65,6 +69,7 @@ class MainWindow(QtWidgets.QMainWindow):
         build_menu.addAction(self.build_action)
 
         tools_menu = self.menuBar().addMenu("&Tools")
+        tools_menu.addAction(self.photos_action)
         tools_menu.addAction(self.settings_action)
 
     def _build_toolbar(self) -> None:
@@ -75,6 +80,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.import_action,
             self.validate_action,
             self.build_action,
+            self.photos_action,
             self.export_action,
             self.settings_action,
         ):
@@ -93,7 +99,32 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2.2"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2.3"))
+
+    def import_photos(self) -> None:
+        if not self.state.project_path:
+            self._warn("Open a project first.")
+            return
+        folder = QtWidgets.QFileDialog.getExistingDirectory(self, "Select recipe photos folder")
+        if not folder:
+            return
+        try:
+            self.console.write("Importing and validating photography assets...")
+            result = import_photo_assets(self.state.project_path, folder)
+            self.console.write(f"Imported photos: {result.imported}")
+            self.console.write(f"Production ready: {result.ready}")
+            self.console.write(f"Need crop / resolution review: {result.needs_crop}")
+            self.console.write(f"Missing recipe photos: {result.missing}")
+            self.console.write(f"Photography report: {result.report_path}")
+            QtWidgets.QMessageBox.information(
+                self,
+                "PP-AIPP Photography Import",
+                f"Imported: {result.imported}\nReady: {result.ready}\n"
+                f"Needs attention: {result.needs_crop}\nMissing: {result.missing}\n\n"
+                f"Saved to: {result.images_dir}",
+            )
+        except (OSError, ValueError) as exc:
+            self._warn(str(exc))
 
     def _apply_stage(self, stage: BuildStage, progress: int, message: str) -> None:
         self.state.set_stage(stage, progress, message)
