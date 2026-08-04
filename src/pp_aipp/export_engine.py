@@ -19,6 +19,7 @@ class ExportResult:
     book_path: Path
     pdf_path: Path
     publishing_readme_path: Path
+    image_coverage_path: Path
     manifest_path: Path
     package_path: Path
     file_count: int
@@ -47,10 +48,15 @@ def export_book_package(project_root: str | Path, built_book: str | Path) -> Exp
     book_path = export_dir / f"{stem}_Export.docx"
     pdf_path = export_dir / f"{stem}_Print.pdf"
     publishing_readme_path = export_dir / "PUBLISHING_README.txt"
+    image_coverage_path = export_dir / "image_coverage_report.json"
     manifest_path = export_dir / "export_manifest.json"
     package_path = export_dir / f"{stem}_Export_Package.zip"
     shutil.copy2(source, book_path)
-    build_publishing_pdf(root / "data" / "project.sqlite3", pdf_path)
+    build_publishing_pdf(
+        root / "data" / "project.sqlite3",
+        pdf_path,
+        coverage_report_path=image_coverage_path,
+    )
 
     publishing_readme_path.write_text(
         "PP-AIPP Publishing Pack\n"
@@ -69,6 +75,7 @@ def export_book_package(project_root: str | Path, built_book: str | Path) -> Exp
         (book_path, book_path.name),
         (pdf_path, pdf_path.name),
         (publishing_readme_path, publishing_readme_path.name),
+        (image_coverage_path, image_coverage_path.name),
     ]
     qa_dir = root / "qa"
     for report_name in ("gold_master_import_report.json", "layout_build_report.json"):
@@ -99,6 +106,7 @@ def export_book_package(project_root: str | Path, built_book: str | Path) -> Exp
         book_path=book_path,
         pdf_path=pdf_path,
         publishing_readme_path=publishing_readme_path,
+        image_coverage_path=image_coverage_path,
         manifest_path=manifest_path,
         package_path=package_path,
         file_count=len(files),

@@ -1,3 +1,5 @@
+import json
+
 from pp_aipp.domain import Ingredient, MethodStep, Nutrition, ProjectDatabase, Recipe
 from pp_aipp.pdf_export import build_publishing_pdf
 
@@ -14,8 +16,13 @@ def test_pdf_export_builds_portable_pdf(tmp_path):
         meal_prep="Prepare the night before.",
     ))
 
-    output = build_publishing_pdf(database_path, tmp_path / "book.pdf")
+    coverage = tmp_path / "image_coverage_report.json"
+    output = build_publishing_pdf(database_path, tmp_path / "book.pdf", coverage_report_path=coverage)
 
     assert output.is_file()
     assert output.read_bytes().startswith(b"%PDF-")
     assert output.stat().st_size > 1000
+    report = json.loads(coverage.read_text(encoding="utf-8"))
+    assert report["total_recipes"] == 1
+    assert report["images_found"] == 0
+    assert report["missing_recipe_ids"] == ["PP-R001"]

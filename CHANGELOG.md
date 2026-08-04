@@ -1,6 +1,13 @@
 
 # Changelog
 
+## 3.0.0b6.post3 — 2026-08-04
+
+- Added the Beta B2.2 Premium Layout and Image Engine.
+- Added automatic 4:5 hero-image discovery for PP-R001 through PP-R080.
+- Added branded image placeholders when licensed production assets are unavailable.
+- Added an image coverage report to every verified publishing package.
+
 ## 3.0.0b6.post2 — 2026-08-04
 
 - Added native PDF rendering without Microsoft Word or LibreOffice.

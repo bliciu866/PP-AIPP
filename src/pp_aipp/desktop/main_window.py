@@ -93,7 +93,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2.1"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2.2"))
 
     def _apply_stage(self, stage: BuildStage, progress: int, message: str) -> None:
         self.state.set_stage(stage, progress, message)
@@ -204,6 +204,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.console.write(f"Exported book: {result.book_path}")
             self.console.write(f"Print PDF: {result.pdf_path}")
             self.console.write(f"Publishing guide: {result.publishing_readme_path}")
+            self.console.write(f"Image coverage: {result.image_coverage_path}")
             self.console.write(f"Export manifest: {result.manifest_path}")
             self.console.write(f"Export package: {result.package_path}")
             self._apply_stage(BuildStage.COMPLETE, 100, "Export package complete.")

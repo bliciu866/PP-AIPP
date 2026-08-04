@@ -1,6 +1,7 @@
 import hashlib
 import json
 import zipfile
+from pathlib import Path
 
 import pytest
 
@@ -18,7 +19,11 @@ def test_export_engine_creates_book_manifest_and_zip(tmp_path, monkeypatch):
     (qa / "layout_build_report.json").write_text('{"status":"PASS"}', encoding="utf-8")
     monkeypatch.setattr(
         "pp_aipp.export_engine.build_publishing_pdf",
-        lambda _database, output: output.write_bytes(b"%PDF-1.4\n") or output,
+        lambda _database, output, **kwargs: (
+            Path(kwargs["coverage_report_path"]).write_text('{"images_missing":80}', encoding="utf-8"),
+            output.write_bytes(b"%PDF-1.4\n"),
+            output,
+        )[-1],
     )
 
     result = export_book_package(project, book)
@@ -28,13 +33,14 @@ def test_export_engine_creates_book_manifest_and_zip(tmp_path, monkeypatch):
     assert result.package_path.is_file()
     manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
     expected_hash = hashlib.sha256(b"controlled-book").hexdigest()
-    assert manifest["application_version"] == "3.0.0b6.post2"
+    assert manifest["application_version"] == "3.0.0b6.post3"
     assert manifest["files"][0]["sha256"] == expected_hash
     with zipfile.ZipFile(result.package_path) as archive:
         assert set(archive.namelist()) == {
             "Project_Physique_30_Days_Fat_Loss_Export.docx",
             "Project_Physique_30_Days_Fat_Loss_Print.pdf",
             "PUBLISHING_README.txt",
+            "image_coverage_report.json",
             "qa/layout_build_report.json",
             "export_manifest.json",
         }

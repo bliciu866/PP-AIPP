@@ -1,6 +1,7 @@
 """Dependency-free-from-office PDF rendering for publishing exports."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -9,6 +10,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import (
+    Image,
     KeepTogether,
     PageBreak,
     Paragraph,
@@ -24,6 +26,7 @@ GREEN = colors.HexColor("#3E8E41")
 SAGE = colors.HexColor("#EAF5EA")
 CHARCOAL = colors.HexColor("#2E2E2E")
 GREY = colors.HexColor("#F3F3F3")
+IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".webp")
 
 
 def _text(value: object) -> str:
@@ -38,10 +41,59 @@ def _footer(canvas, document) -> None:
     canvas.restoreState()
 
 
-def build_publishing_pdf(database_path: str | Path, output_path: str | Path) -> Path:
+def _recipe_image(project_root: Path, recipe: dict) -> Path | None:
+    recipe_id = str(recipe.get("recipe_id") or "").upper()
+    candidates: list[Path] = []
+    for asset in recipe.get("assets", []):
+        value = asset.get("file_path") or asset.get("path")
+        if value:
+            asset_path = Path(value)
+            candidates.append(asset_path if asset_path.is_absolute() else project_root / asset_path)
+    for directory in (project_root / "images", project_root / "assets" / "images"):
+        for extension in IMAGE_EXTENSIONS:
+            candidates.extend((directory / f"{recipe_id}{extension}", directory / f"{recipe_id}_hero{extension}"))
+    return next((path.resolve() for path in candidates if path.is_file()), None)
+
+
+def _hero_block(recipe: dict, image_path: Path | None, styles: dict) -> Table:
+    recipe_id = _text(recipe.get("recipe_id"))
+    if image_path:
+        visual = Image(str(image_path), width=2.4 * inch, height=3.0 * inch)
+        caption = Paragraph(f"{recipe_id}  •  PROJECT PHYSIQUE™", styles["hero_caption"])
+    else:
+        visual = Table(
+            [[Paragraph(
+                f"<b>HERO PHOTO</b><br/>{recipe_id}<br/><font size='7'>4:5 ASSET SLOT</font>",
+                styles["hero_placeholder"],
+            )]],
+            colWidths=[2.4 * inch], rowHeights=[3.0 * inch],
+        )
+        visual.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), GREY),
+            ("BOX", (0, 0), (-1, -1), 0.8, colors.HexColor("#C8D5C8")),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ]))
+        caption = Paragraph("Image pending — add a licensed production asset", styles["hero_caption"])
+    block = Table([[visual], [caption]], colWidths=[2.5 * inch], hAlign="CENTER")
+    block.setStyle(TableStyle([
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("TOPPADDING", (0, 0), (-1, -1), 2),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+    ]))
+    return block
+
+
+def build_publishing_pdf(
+    database_path: str | Path,
+    output_path: str | Path,
+    *,
+    coverage_report_path: str | Path | None = None,
+) -> Path:
     """Render all persisted recipes to a portable US Letter publishing PDF."""
     database = Path(database_path).expanduser().resolve()
     output = Path(output_path).expanduser().resolve()
+    project_root = database.parent.parent
     recipes = LayoutRecipeRepository(database).list_recipes()
     if not recipes:
         raise ValueError("No recipes found for PDF export")
@@ -68,6 +120,15 @@ def build_publishing_pdf(database_path: str | Path, output_path: str | Path) -> 
         leading=13, textColor=GREEN, spaceBefore=4, spaceAfter=3,
     )
     centered = ParagraphStyle("Centered", parent=small, alignment=TA_CENTER)
+    hero_caption = ParagraphStyle(
+        "HeroCaption", parent=small, alignment=TA_CENTER, textColor=colors.HexColor("#667266"),
+        spaceBefore=2,
+    )
+    hero_placeholder = ParagraphStyle(
+        "HeroPlaceholder", parent=body, alignment=TA_CENTER, textColor=GREEN,
+        fontSize=10, leading=16,
+    )
+    hero_styles = {"hero_caption": hero_caption, "hero_placeholder": hero_placeholder}
 
     document = SimpleDocTemplate(
         str(output), pagesize=letter, rightMargin=0.62 * inch, leftMargin=0.72 * inch,
@@ -75,6 +136,8 @@ def build_publishing_pdf(database_path: str | Path, output_path: str | Path) -> 
         title="Project Physique — 30 Days Fat Loss", author="Project Physique",
     )
     story = []
+    found_images: list[dict[str, str]] = []
+    missing_images: list[str] = []
     for index, recipe in enumerate(recipes):
         if index:
             story.append(PageBreak())
@@ -152,5 +215,23 @@ def build_publishing_pdf(database_path: str | Path, output_path: str | Path) -> 
                 ]))
                 story.append(KeepTogether([Spacer(1, 3), panel]))
 
+        image_path = _recipe_image(project_root, recipe)
+        if image_path:
+            found_images.append({"recipe_id": recipe["recipe_id"], "path": str(image_path)})
+        else:
+            missing_images.append(recipe["recipe_id"])
+        story.extend([Spacer(1, 8), _hero_block(recipe, image_path, hero_styles)])
+
     document.build(story, onFirstPage=_footer, onLaterPages=_footer)
+    if coverage_report_path:
+        report = Path(coverage_report_path).expanduser().resolve()
+        report.parent.mkdir(parents=True, exist_ok=True)
+        report.write_text(json.dumps({
+            "schema_version": 1,
+            "total_recipes": len(recipes),
+            "images_found": len(found_images),
+            "images_missing": len(missing_images),
+            "found": found_images,
+            "missing_recipe_ids": missing_images,
+        }, indent=2) + "\n", encoding="utf-8")
     return output
