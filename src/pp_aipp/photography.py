@@ -5,6 +5,7 @@ import json
 import re
 import shutil
 from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 
 from PIL import Image, ImageOps
@@ -37,6 +38,9 @@ class PhotoImportResult:
     missing: int
     replaced: int = 0
     auto_prepared: int = 0
+    coverage_percent: float = 0
+    batch_number: int = 0
+    next_missing: tuple[str, ...] = ()
 
 
 def _inspect(path: Path, recipe_id: str) -> PhotoAsset:
@@ -152,12 +156,40 @@ def import_photo_assets(
     inventory = _existing_assets(images_dir, expected)
     present = {item.recipe_id for item in inventory}
     missing = [recipe_id for recipe_id in expected if recipe_id not in present]
-    report_path = root / "qa" / "photography_readiness_report.json"
+    qa_dir = root / "qa"
+    report_path = qa_dir / "photography_readiness_report.json"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     ready = sum(item.status == "READY" for item in inventory)
     needs_crop = sum(item.status != "READY" for item in inventory)
-    report_path.write_text(json.dumps({
-        "schema_version": 2,
+    history_path = qa_dir / "photography_batch_history.json"
+    try:
+        history = json.loads(history_path.read_text(encoding="utf-8"))
+        if not isinstance(history, list):
+            history = []
+    except (OSError, json.JSONDecodeError):
+        history = []
+    batch_number = len(history) + 1
+    coverage_percent = round((ready / len(expected)) * 100, 1) if expected else 100.0
+    next_missing = missing[:10]
+    batch_record = {
+        "batch_number": batch_number,
+        "created_utc": datetime.now(UTC).isoformat(),
+        "source_folder": source.name,
+        "imported_recipe_ids": imported_recipe_ids,
+        "imported": len(imported_recipe_ids),
+        "replaced": replaced,
+        "auto_prepared": auto_prepared,
+        "rejected": len(rejected),
+        "ready_total": ready,
+        "missing_total": len(missing),
+        "coverage_percent": coverage_percent,
+    }
+    history.append(batch_record)
+    history_path.write_text(json.dumps(history, indent=2) + "\n", encoding="utf-8")
+    report = {
+        "schema_version": 3,
+        "campaign": "PP-R001-PP-R080",
+        "latest_batch_number": batch_number,
         "expected_images": len(expected),
         "imported_this_batch": len(imported_recipe_ids),
         "replaced_this_batch": replaced,
@@ -167,11 +199,16 @@ def import_photo_assets(
         "images_needing_attention": needs_crop,
         "rejected_files": len(rejected),
         "missing_images": len(missing),
+        "coverage_percent": coverage_percent,
+        "next_missing_recipe_ids": next_missing,
+        "batch_history_file": history_path.name,
         "assets": [asdict(item) for item in inventory],
         "rejected": rejected,
         "missing_recipe_ids": missing,
-    }, indent=2) + "\n", encoding="utf-8")
+    }
+    report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     return PhotoImportResult(
         images_dir, report_path, len(imported_recipe_ids), ready, needs_crop,
-        len(rejected), len(missing), replaced, auto_prepared,
+        len(rejected), len(missing), replaced, auto_prepared, coverage_percent,
+        batch_number, tuple(next_missing),
     )

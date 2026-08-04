@@ -33,7 +33,7 @@ def test_export_engine_creates_book_manifest_and_zip(tmp_path, monkeypatch):
     assert result.package_path.is_file()
     manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
     expected_hash = hashlib.sha256(b"controlled-book").hexdigest()
-    assert manifest["application_version"] == "3.0.0b6.post5"
+    assert manifest["application_version"] == "3.0.0b6.post6"
     assert manifest["files"][0]["sha256"] == expected_hash
     with zipfile.ZipFile(result.package_path) as archive:
         assert set(archive.namelist()) == {

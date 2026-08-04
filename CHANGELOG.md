@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 3.0.0b6.post6 — 2026-08-04
+
+- Added the Beta B2.5 80-recipe photography campaign workflow.
+- Added persistent batch history, coverage percentages, and next-missing recipe IDs.
+- Included photography batch history in verified export packages.
+
 ## 3.0.0b6.post3 — 2026-08-04
 
 - Added the Beta B2.2 Premium Layout and Image Engine.
@@ -125,3 +131,8 @@
 - Added incremental photography batches that preserve existing project coverage.
 - Added automatic EXIF rotation and production-safe 4:5 preparation.
 - Added controlled replacement of earlier recipe images and QA report schema v2.
+# Beta B2.5
+
+- Added resumable 80-recipe photography campaign tracking.
+- Added persistent batch history, coverage percentage and next-missing queue.
+- Included photography batch history in verified export packages.

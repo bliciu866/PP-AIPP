@@ -97,3 +97,29 @@ def test_reimport_replaces_previous_recipe_photo(tmp_path):
     assert result.replaced == 1
     assert not (project / "images" / "PP-R001.png").exists()
     assert (project / "images" / "PP-R001.jpg").is_file()
+
+
+def test_campaign_tracks_batches_coverage_and_next_missing(tmp_path):
+    project = tmp_path / "project"
+    first = tmp_path / "batch-01"
+    second = tmp_path / "batch-02"
+    first.mkdir()
+    second.mkdir()
+    _image(first / "PP-R001.jpg", (1200, 1500))
+    _image(second / "PP-R002.jpg", (1200, 1500))
+
+    one = import_photo_assets(project, first, recipe_ids=["PP-R001", "PP-R002", "PP-R003"])
+    two = import_photo_assets(project, second, recipe_ids=["PP-R001", "PP-R002", "PP-R003"])
+
+    assert one.batch_number == 1
+    assert one.coverage_percent == 33.3
+    assert two.batch_number == 2
+    assert two.coverage_percent == 66.7
+    assert two.next_missing == ("PP-R003",)
+    history = json.loads(
+        (project / "qa" / "photography_batch_history.json").read_text(encoding="utf-8")
+    )
+    assert [batch["imported"] for batch in history] == [1, 1]
+    report = json.loads(two.report_path.read_text(encoding="utf-8"))
+    assert report["schema_version"] == 3
+    assert report["latest_batch_number"] == 2

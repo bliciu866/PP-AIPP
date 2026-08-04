@@ -99,7 +99,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2.4"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2.5"))
 
     def import_photos(self) -> None:
         if not self.state.project_path:
@@ -117,6 +117,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.console.write(f"Production ready: {result.ready}")
             self.console.write(f"Need crop / resolution review: {result.needs_crop}")
             self.console.write(f"Missing recipe photos: {result.missing}")
+            self.console.write(f"Campaign coverage: {result.coverage_percent}%")
+            self.console.write(f"Completed photography batch: {result.batch_number}")
+            if result.next_missing:
+                self.console.write(f"Next missing: {', '.join(result.next_missing)}")
             self.console.write(f"Photography report: {result.report_path}")
             QtWidgets.QMessageBox.information(
                 self,
@@ -124,6 +128,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 f"Imported: {result.imported}\nReady: {result.ready}\n"
                 f"Auto-prepared: {result.auto_prepared}\nReplaced: {result.replaced}\n"
                 f"Needs attention: {result.needs_crop}\nMissing: {result.missing}\n\n"
+                f"Coverage: {result.coverage_percent}%\nBatch: {result.batch_number}\n"
+                f"Next missing: {', '.join(result.next_missing) or 'None'}\n\n"
                 f"Saved to: {result.images_dir}",
             )
         except (OSError, ValueError) as exc:
