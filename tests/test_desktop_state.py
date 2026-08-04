@@ -10,12 +10,12 @@ def test_desktop_state_defaults():
     assert state.progress == 0
 
 
-def test_open_project_sets_export_path(tmp_path):
+def test_open_project_sets_build_path(tmp_path):
     state = DesktopState()
     result = state.open_project(tmp_path)
     assert result == tmp_path.resolve()
     assert state.project_path == tmp_path.resolve()
-    assert state.export_path == tmp_path.resolve() / "exports"
+    assert state.export_path == tmp_path.resolve() / "build"
     assert state.stage == BuildStage.PROJECT_OPEN
 
 
