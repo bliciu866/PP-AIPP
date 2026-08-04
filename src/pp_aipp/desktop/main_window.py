@@ -3,7 +3,7 @@ from __future__ import annotations
 from pp_aipp.build_pipeline import build_gold_master_book
 from pp_aipp.export_engine import export_book_package
 from pp_aipp.gold_master import GoldMasterProject
-from pp_aipp.photography import import_photo_assets
+from pp_aipp.photography import import_photo_assets, prepare_next_photo_batch
 
 from .qt import QtCore, QtGui, QtWidgets
 from .settings_dialog import SettingsDialog
@@ -49,6 +49,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.photos_action = QtGui.QAction("Import Photos", self)
         self.photos_action.triggered.connect(self.import_photos)
 
+        self.plan_photos_action = QtGui.QAction("Prepare Photo Batch", self)
+        self.plan_photos_action.triggered.connect(self.prepare_photo_batch)
+
         self.settings_action = QtGui.QAction("Settings", self)
         self.settings_action.triggered.connect(self.open_settings)
 
@@ -70,6 +73,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         tools_menu = self.menuBar().addMenu("&Tools")
         tools_menu.addAction(self.photos_action)
+        tools_menu.addAction(self.plan_photos_action)
         tools_menu.addAction(self.settings_action)
 
     def _build_toolbar(self) -> None:
@@ -81,6 +85,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.validate_action,
             self.build_action,
             self.photos_action,
+            self.plan_photos_action,
             self.export_action,
             self.settings_action,
         ):
@@ -99,7 +104,32 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2.5"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2.6"))
+
+    def prepare_photo_batch(self) -> None:
+        if not self.state.project_path:
+            self._warn("Open a project first.")
+            return
+        batch_size, accepted = QtWidgets.QInputDialog.getInt(
+            self, "Prepare Photo Batch", "Number of missing recipes:", 10, 1, 80,
+        )
+        if not accepted:
+            return
+        try:
+            plan = prepare_next_photo_batch(self.state.project_path, batch_size=batch_size)
+            self.console.write(f"Prepared photography batch: {plan.batch_number}")
+            self.console.write(f"Recipes: {', '.join(plan.recipe_ids)}")
+            self.console.write(f"Batch folder: {plan.batch_dir}")
+            QtWidgets.QMessageBox.information(
+                self,
+                "PP-AIPP Photo Batch Ready",
+                f"Batch: {plan.batch_number}\nRecipes: {len(plan.recipe_ids)}\n"
+                f"Missing before batch: {plan.missing_total}\n"
+                f"Coverage: {plan.coverage_percent}%\n\nSaved to:\n{plan.batch_dir}",
+            )
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(str(plan.batch_dir)))
+        except (OSError, ValueError) as exc:
+            self._warn(str(exc))
 
     def import_photos(self) -> None:
         if not self.state.project_path:

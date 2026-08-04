@@ -1,6 +1,7 @@
 """Validated photography asset import and coverage reporting."""
 from __future__ import annotations
 
+import csv
 import json
 import re
 import shutil
@@ -41,6 +42,93 @@ class PhotoImportResult:
     coverage_percent: float = 0
     batch_number: int = 0
     next_missing: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class PhotoBatchPlan:
+    batch_dir: Path
+    manifest_path: Path
+    readme_path: Path
+    batch_number: int
+    recipe_ids: tuple[str, ...]
+    missing_total: int
+    coverage_percent: float
+
+
+def _expected_ids(recipe_ids: list[str] | None = None) -> list[str]:
+    return [value.upper() for value in (recipe_ids or [f"PP-R{i:03d}" for i in range(1, 81)])]
+
+
+def prepare_next_photo_batch(
+    project_root: str | Path,
+    *,
+    recipe_ids: list[str] | None = None,
+    batch_size: int = 10,
+) -> PhotoBatchPlan:
+    """Create a production folder and manifests for the next missing recipe photos."""
+    if not 1 <= batch_size <= 80:
+        raise ValueError("Photo batch size must be between 1 and 80")
+    root = Path(project_root).expanduser().resolve()
+    expected = _expected_ids(recipe_ids)
+    inventory = _existing_assets(root / "images", expected)
+    ready_ids = {asset.recipe_id for asset in inventory if asset.status == "READY"}
+    missing = [recipe_id for recipe_id in expected if recipe_id not in ready_ids]
+    selected = missing[:batch_size]
+    if not selected:
+        raise ValueError("Photography campaign is complete; no missing recipe photos remain.")
+
+    batches_dir = root / "photo_batches"
+    batches_dir.mkdir(parents=True, exist_ok=True)
+    existing_numbers = []
+    for path in batches_dir.glob("Batch_*"):
+        match = re.match(r"Batch_(\d+)", path.name)
+        if match:
+            existing_numbers.append(int(match.group(1)))
+    batch_number = max(existing_numbers, default=0) + 1
+    batch_dir = batches_dir / (
+        f"Batch_{batch_number:03d}_{selected[0]}_to_{selected[-1]}"
+    )
+    batch_dir.mkdir(parents=True, exist_ok=False)
+    csv_path = batch_dir / "PHOTO_BATCH_MANIFEST.csv"
+    with csv_path.open("w", encoding="utf-8-sig", newline="") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(["recipe_id", "required_filename", "status"])
+        for recipe_id in selected:
+            writer.writerow([recipe_id, f"{recipe_id}.jpg", "MISSING"])
+
+    readme_path = batch_dir / "README.txt"
+    readme_path.write_text(
+        "PP-AIPP Photography Batch\n"
+        "==========================\n\n"
+        f"Batch: {batch_number}\n"
+        f"Recipes: {selected[0]} to {selected[-1]}\n\n"
+        "1. Add one licensed portrait food photo for every listed recipe.\n"
+        "2. Use the exact filename from PHOTO_BATCH_MANIFEST.csv.\n"
+        "3. Recommended source: at least 1200 x 1500 px.\n"
+        "4. In PP-AIPP choose Import Photos and select this folder.\n",
+        encoding="utf-8",
+    )
+    coverage = round((len(ready_ids) / len(expected)) * 100, 1) if expected else 100.0
+    manifest = {
+        "schema_version": 1,
+        "batch_number": batch_number,
+        "created_utc": datetime.now(UTC).isoformat(),
+        "campaign": "PP-R001-PP-R080",
+        "recipe_ids": selected,
+        "required_filenames": [f"{recipe_id}.jpg" for recipe_id in selected],
+        "missing_total_before_batch": len(missing),
+        "coverage_percent_before_batch": coverage,
+        "csv_manifest": csv_path.name,
+    }
+    manifest_path = batch_dir / "photo_batch_manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    qa_dir = root / "qa"
+    qa_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(manifest_path, qa_dir / "photography_batch_plan.json")
+    return PhotoBatchPlan(
+        batch_dir, manifest_path, readme_path, batch_number, tuple(selected),
+        len(missing), coverage,
+    )
 
 
 def _inspect(path: Path, recipe_id: str) -> PhotoAsset:
@@ -115,7 +203,7 @@ def import_photo_assets(
         raise FileNotFoundError(f"Photo folder not found: {source}")
     images_dir = root / "images"
     images_dir.mkdir(parents=True, exist_ok=True)
-    expected = [value.upper() for value in (recipe_ids or [f"PP-R{i:03d}" for i in range(1, 81)])]
+    expected = _expected_ids(recipe_ids)
 
     imported_recipe_ids: list[str] = []
     rejected: list[dict[str, str]] = []

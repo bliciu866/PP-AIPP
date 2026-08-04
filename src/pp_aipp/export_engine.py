@@ -88,6 +88,9 @@ def export_book_package(project_root: str | Path, built_book: str | Path) -> Exp
     photography_history = qa_dir / "photography_batch_history.json"
     if photography_history.is_file():
         files.append((photography_history, f"qa/{photography_history.name}"))
+    photography_plan = qa_dir / "photography_batch_plan.json"
+    if photography_plan.is_file():
+        files.append((photography_plan, f"qa/{photography_plan.name}"))
 
     manifest = {
         "schema_version": 1,

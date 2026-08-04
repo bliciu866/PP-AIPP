@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 3.0.0b6.post7 — 2026-08-04
+
+- Added the Beta B2.6 Photo Batch Planner for the remaining PP-R001–PP-R080 campaign.
+- Added numbered batch folders with CSV, JSON, and plain-text production manifests.
+- Added a configurable `Prepare Photo Batch` desktop action and export-package plan reporting.
+
 ## 3.0.0b6.post6 — 2026-08-04
 
 - Added the Beta B2.5 80-recipe photography campaign workflow.

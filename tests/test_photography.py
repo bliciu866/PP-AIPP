@@ -2,7 +2,7 @@ import json
 
 from PIL import Image
 
-from pp_aipp.photography import import_photo_assets
+from pp_aipp.photography import import_photo_assets, prepare_next_photo_batch
 
 
 def _image(path, size):
@@ -123,3 +123,32 @@ def test_campaign_tracks_batches_coverage_and_next_missing(tmp_path):
     report = json.loads(two.report_path.read_text(encoding="utf-8"))
     assert report["schema_version"] == 3
     assert report["latest_batch_number"] == 2
+
+
+def test_prepare_next_photo_batch_creates_manifests_for_missing_ids(tmp_path):
+    project = tmp_path / "project"
+    source = tmp_path / "incoming"
+    source.mkdir()
+    _image(source / "PP-R001.jpg", (1200, 1500))
+    import_photo_assets(project, source, recipe_ids=["PP-R001", "PP-R002", "PP-R003"])
+
+    plan = prepare_next_photo_batch(
+        project, recipe_ids=["PP-R001", "PP-R002", "PP-R003"], batch_size=2
+    )
+
+    assert plan.batch_number == 1
+    assert plan.recipe_ids == ("PP-R002", "PP-R003")
+    assert plan.coverage_percent == 33.3
+    assert plan.manifest_path.is_file()
+    assert "PP-R002.jpg" in (plan.batch_dir / "PHOTO_BATCH_MANIFEST.csv").read_text(
+        encoding="utf-8-sig"
+    )
+    assert (project / "qa" / "photography_batch_plan.json").is_file()
+
+
+def test_prepare_next_photo_batch_increments_folder_number(tmp_path):
+    project = tmp_path / "project"
+    one = prepare_next_photo_batch(project, recipe_ids=["PP-R001"], batch_size=1)
+    two = prepare_next_photo_batch(project, recipe_ids=["PP-R001"], batch_size=1)
+    assert one.batch_number == 1
+    assert two.batch_number == 2
