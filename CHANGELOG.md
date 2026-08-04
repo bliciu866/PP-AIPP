@@ -1,6 +1,15 @@
 
 # Changelog
 
+## 3.0.0b4.post1 — 2026-08-04
+
+- Added Sprint 1A Gold Master project schema and controlled DOCX import.
+- Added SHA-256 source manifests and project structure validation.
+- Connected desktop Import Gold Master and Validate actions to production services.
+- Normalized Ruff formatting across source and tests.
+- Removed the obsolete root package that interfered with pytest discovery.
+- Verified 36 tests with 72.83% coverage.
+
 ## 3.0.0-beta.1
 
 - Added the first PySide6/Qt desktop application framework.
