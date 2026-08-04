@@ -1,6 +1,13 @@
 
 # Changelog
 
+## 3.0.0b5.post14 — 2026-08-04
+
+- Delivered Sprint Beta B1.4 controlled-content parsing improvements.
+- Moved production DOCX output to the visible project `build` directory.
+- Added Open Book and Open Folder actions after a successful build.
+- Aligned desktop-state tests and runtime/package version declarations.
+
 ## 3.0.0b5 — 2026-08-04
 
 - Connected the desktop Build Book action to the production Gold Master parser.
