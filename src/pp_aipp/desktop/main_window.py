@@ -7,6 +7,7 @@ from .settings_dialog import SettingsDialog
 from .state import BuildStage, DesktopState
 from .theme import APP_STYLESHEET
 from .widgets import BuildConsole, ProjectTree
+from pp_aipp.gold_master import GoldMasterProject
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -91,7 +92,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.3"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.4"))
 
     def _apply_stage(self, stage: BuildStage, progress: int, message: str) -> None:
         self.state.set_stage(stage, progress, message)
@@ -110,6 +111,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.console.write(self.state.messages[-1])
 
     def import_gold_master(self) -> None:
+        if not self.state.project_path:
+            self._warn("Open a project first.")
+            return
         path, _ = QtWidgets.QFileDialog.getOpenFileName(
             self,
             "Select Gold Master",
@@ -118,19 +122,29 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         if not path:
             return
-        resolved = self.state.select_gold_master(path)
-        self.stage_label.setText(self.state.stage.value.upper())
-        self.console.set_progress(self.state.progress)
-        self.console.write(f"Selected controlled source: {resolved.name}")
-        self.console.write("Parser execution will be connected in Beta B1.2.")
+        try:
+            self._apply_stage(BuildStage.IMPORTING, 10, "Importing controlled source...")
+            result = GoldMasterProject(self.state.project_path).import_source(path)
+            self.state.gold_master_path = result.imported_source
+            self._apply_stage(BuildStage.READY, 20, f"Imported: {result.imported_source.name}")
+            self.console.write(f"SHA-256: {result.manifest.source_sha256}")
+            self.console.write("Gold Master structure validated.")
+        except (OSError, ValueError) as exc:
+            self._apply_stage(BuildStage.FAILED, 0, f"Import failed: {exc}")
+            self._warn(str(exc))
 
     def validate_project(self) -> None:
         if not self.state.project_path:
             self._warn("Open a project first.")
             return
-        self._apply_stage(BuildStage.VALIDATING, 35, "Validation requested.")
-        self.console.write("Verification pipeline connection is scheduled for Beta B1.3.")
-        self._apply_stage(BuildStage.READY, 40, "Validation command prepared.")
+        self._apply_stage(BuildStage.VALIDATING, 35, "Validating Gold Master project...")
+        result = GoldMasterProject(self.state.project_path).validate()
+        if result.valid:
+            self._apply_stage(BuildStage.READY, 40, "Gold Master project is valid.")
+            return
+        for issue in result.issues:
+            self.console.write(f"{issue.code}: {issue.message}")
+        self._apply_stage(BuildStage.FAILED, 0, "Gold Master validation failed.")
 
     def build_book(self) -> None:
         if not self.state.project_path:
