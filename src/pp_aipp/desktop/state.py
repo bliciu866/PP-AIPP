@@ -36,7 +36,7 @@ class DesktopState:
     def open_project(self, path: str | Path) -> Path:
         resolved = Path(path).expanduser().resolve()
         self.project_path = resolved
-        self.export_path = resolved / "build"
+        self.export_path = resolved / "exports"
         self.set_stage(BuildStage.PROJECT_OPEN, 5, f"Project opened: {resolved}")
         return resolved
 

@@ -1,6 +1,14 @@
 
 # Changelog
 
+## 3.0.0b6.post1 — 2026-08-04
+
+- Delivered Beta B2 Export Engine integration.
+- Added verified DOCX export packages with SHA-256 manifests.
+- Included available Gold Master import and layout QA reports in each ZIP package.
+- Added Export Complete feedback with Open Export and Open Folder actions.
+- Added Export Engine unit tests and updated the Windows artifact name.
+
 ## 3.0.0b5.post14 — 2026-08-04
 
 - Delivered Sprint Beta B1.4 controlled-content parsing improvements.

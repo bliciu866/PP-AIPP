@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pp_aipp.build_pipeline import build_gold_master_book
+from pp_aipp.export_engine import export_book_package
 from pp_aipp.gold_master import GoldMasterProject
 
 from .qt import QtCore, QtGui, QtWidgets
@@ -92,7 +93,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.5 / B1.4"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.6 / B2"))
 
     def _apply_stage(self, stage: BuildStage, progress: int, message: str) -> None:
         self.state.set_stage(stage, progress, message)
@@ -173,7 +174,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 f"{result.import_summary.warnings} source warnings."
             )
             self.state.built_book_path = result.layout.output_docx
-            self.state.export_path = result.layout.output_docx.parent
+            self.state.export_path = self.state.project_path / "exports"
             self._apply_stage(
                 BuildStage.COMPLETE,
                 80,
@@ -188,9 +189,26 @@ class MainWindow(QtWidgets.QMainWindow):
         if not self.state.project_path:
             self._warn("Open a project first.")
             return
-        self._apply_stage(BuildStage.EXPORTING, 75, "Export requested.")
-        self.console.write("Export Engine integration is scheduled for Beta B2.")
-        self._apply_stage(BuildStage.READY, 80, "Export command prepared.")
+        if not self.state.built_book_path:
+            candidate = self.state.project_path / "build" / "Project_Physique_30_Days_Fat_Loss_Built.docx"
+            if candidate.is_file():
+                self.state.built_book_path = candidate
+            else:
+                self._warn("Build the book before exporting.")
+                return
+        try:
+            self._apply_stage(BuildStage.EXPORTING, 85, "Creating verified export package...")
+            QtWidgets.QApplication.processEvents()
+            result = export_book_package(self.state.project_path, self.state.built_book_path)
+            self.state.export_path = result.export_dir
+            self.console.write(f"Exported book: {result.book_path}")
+            self.console.write(f"Export manifest: {result.manifest_path}")
+            self.console.write(f"Export package: {result.package_path}")
+            self._apply_stage(BuildStage.COMPLETE, 100, "Export package complete.")
+            self._show_export_complete(result.package_path, result.file_count)
+        except (OSError, ValueError) as exc:
+            self._apply_stage(BuildStage.FAILED, 0, f"Export failed: {exc}")
+            self._warn(str(exc))
 
     def open_settings(self) -> None:
         dialog = SettingsDialog(self.state.export_path, self)
@@ -212,6 +230,22 @@ class MainWindow(QtWidgets.QMainWindow):
             QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(str(output_path)))
         elif clicked is open_folder:
             QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(str(output_path.parent)))
+
+    def _show_export_complete(self, package_path, file_count: int) -> None:
+        box = QtWidgets.QMessageBox(self)
+        box.setWindowTitle("PP-AIPP Export Complete")
+        box.setIcon(QtWidgets.QMessageBox.Icon.Information)
+        box.setText(f"Exported {file_count} verified files.")
+        box.setInformativeText(f"Package saved to:\n{package_path}")
+        open_export = box.addButton("Open Export", QtWidgets.QMessageBox.ButtonRole.ActionRole)
+        open_folder = box.addButton("Open Folder", QtWidgets.QMessageBox.ButtonRole.ActionRole)
+        box.addButton(QtWidgets.QMessageBox.StandardButton.Close)
+        box.exec()
+        clicked = box.clickedButton()
+        if clicked is open_export:
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(str(package_path)))
+        elif clicked is open_folder:
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(str(package_path.parent)))
 
     def _warn(self, text: str) -> None:
         QtWidgets.QMessageBox.warning(self, "PP-AIPP", text)
