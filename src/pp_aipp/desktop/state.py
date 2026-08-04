@@ -21,6 +21,7 @@ class DesktopState:
     project_path: Path | None = None
     gold_master_path: Path | None = None
     export_path: Path | None = None
+    built_book_path: Path | None = None
     stage: BuildStage = BuildStage.READY
     progress: int = 0
     messages: list[str] = field(default_factory=list)

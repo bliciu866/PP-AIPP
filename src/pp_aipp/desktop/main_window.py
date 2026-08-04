@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pp_aipp.build_pipeline import build_gold_master_book
 from pp_aipp.gold_master import GoldMasterProject
 
 from .qt import QtCore, QtGui, QtWidgets
@@ -91,7 +92,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _build_status(self) -> None:
         self.stage_label = QtWidgets.QLabel("READY")
         self.statusBar().addWidget(self.stage_label)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.4.1"))
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel("v3.0.0-beta.5 / B1.3"))
 
     def _apply_stage(self, stage: BuildStage, progress: int, message: str) -> None:
         self.state.set_stage(stage, progress, message)
@@ -152,9 +153,36 @@ class MainWindow(QtWidgets.QMainWindow):
         if not self.state.gold_master_path:
             self._warn("Select a Gold Master first.")
             return
-        self._apply_stage(BuildStage.BUILDING, 55, "Build Book requested.")
-        self.console.write("Database-driven Layout Engine will be connected in Beta B1.3.")
-        self._apply_stage(BuildStage.READY, 60, "Build command prepared.")
+        try:
+            self._apply_stage(BuildStage.BUILDING, 50, "Parsing Gold Master...")
+            QtWidgets.QApplication.processEvents()
+            result = build_gold_master_book(
+                self.state.project_path,
+                self.state.gold_master_path,
+            )
+            self.console.set_progress(75)
+            self.console.write(
+                f"Imported {result.import_summary.imported_recipes} recipes and "
+                f"{result.import_summary.ingredients} ingredients."
+            )
+            self.console.write(f"Database: {result.database_path}")
+            self.console.write(f"QA report: {result.layout_report_path}")
+            self.state.built_book_path = result.layout.output_docx
+            self.state.export_path = result.layout.output_docx.parent
+            self._apply_stage(
+                BuildStage.COMPLETE,
+                80,
+                f"Book built: {result.layout.output_docx.name}",
+            )
+            QtWidgets.QMessageBox.information(
+                self,
+                "PP-AIPP Build Complete",
+                f"Built {result.layout.recipe_count} recipes.\n\n"
+                f"Output:\n{result.layout.output_docx}",
+            )
+        except (OSError, ValueError) as exc:
+            self._apply_stage(BuildStage.FAILED, 0, f"Build failed: {exc}")
+            self._warn(str(exc))
 
     def export_book(self) -> None:
         if not self.state.project_path:

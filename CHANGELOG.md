@@ -1,6 +1,14 @@
 
 # Changelog
 
+## 3.0.0b5 — 2026-08-04
+
+- Connected the desktop Build Book action to the production Gold Master parser.
+- Added transactional recipe persistence in the project SQLite database.
+- Added deterministic DOCX generation for all imported recipes.
+- Added Gold Master import and layout build reports in the project QA directory.
+- Added an end-to-end build pipeline test and Windows desktop completion feedback.
+
 ## 3.0.0b4.post1 — 2026-08-04
 
 - Added Sprint 1A Gold Master project schema and controlled DOCX import.
