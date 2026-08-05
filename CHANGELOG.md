@@ -1,6 +1,15 @@
 
 # Changelog
 
+## 3.0.0b10 — 2026-08-05
+
+- Added the B3.3 Complete Premium Programme publishing engine.
+- Restored the Success Guide, Nutrition Basics, UK Shopping System, 30-day tracker and FAQ to the photography PDF.
+- Added a complete Day 1–30 meal plan, five weekly shopping lists and indexes by meal, calories, protein and total time.
+- Added Chef's Tip, Common Mistake, Ingredient Swap, Meal Prep and Serving Suggestion cards to every recipe page.
+- Added total time, difficulty, fibre, freezer guidance, vegetarian guidance and allergen notes.
+- Verified a 105-page, 80-recipe publishing PDF with 80 of 80 photographs present.
+
 ## 3.0.0b9 — 2026-08-05
 
 - Added the B3.2 Luxury Editorial Photo Layout Engine.

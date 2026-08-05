@@ -282,6 +282,43 @@ class GoldMasterParser:
         if not table_rows:
             return section
 
+        # Premium editorial cards are stored as two-column labelled rows in the
+        # controlled Gold Master.  Older builds treated them as unknown tables,
+        # which is why only Meal Prep survived into the photographic PDF.
+        premium_labels = {
+            "chef's tip": "chef_tip",
+            "chef’s tip": "chef_tip",
+            "chefie’s tip": "chef_tip",  # legacy v6 source typo
+            "chefie's tip": "chef_tip",
+            "common mistake": "common_mistake",
+            "ingredient swap": "ingredient_swap",
+            "meal-prep note": "meal_prep",
+            "meal prep note": "meal_prep",
+            "meal prep": "meal_prep",
+            "serving suggestion": "serving_suggestion",
+        }
+        normalized_labels = {clean(row[0]).lower().rstrip(":") for row in table_rows if row}
+        premium_table = bool(normalized_labels & {
+            "chef's tip", "chef’s tip", "chefie’s tip", "chefie's tip",
+            "common mistake", "ingredient swap", "serving suggestion",
+        })
+        premium_found = False
+        for row in table_rows:
+            if len(row) < 2:
+                continue
+            label = clean(row[0]).lower().rstrip(":")
+            field = premium_labels.get(label)
+            value = clean(" ".join(row[1:]))
+            if not premium_table or not field or not value:
+                continue
+            premium_found = True
+            if field in {"chef_tip", "ingredient_swap", "meal_prep"}:
+                setattr(recipe, field, value)
+            else:
+                recipe.metadata[field] = value
+        if premium_found:
+            return section
+
         # Some Gold Masters store Method/Meal Prep as labelled table rows.
         consumed_content = False
         for row in table_rows:

@@ -1,4 +1,13 @@
-# PP-AIPP v3.0.0-beta.7 B3 — Premium Schema Upgrade
+# PP-AIPP v3.0.0-beta.10 B3.3 — Complete Premium Programme
+
+## Complete premium publishing PDF
+
+B3.3 produces a complete 105-page luxury photo edition: programme guidance,
+the full Day 1–30 plan, five weekly shopping lists, four recipe indexes, 80
+photo-led recipe pages, a 30-day tracker and FAQ. Every recipe includes five
+editorial cards plus time, difficulty, fibre, freezer, vegetarian and allergen
+guidance. The cover is intentionally retained as the current working cover so
+it can be replaced during the final visual polish.
 
 ## Gold Master Premium v5 support
 

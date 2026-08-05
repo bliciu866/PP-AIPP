@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import re
+from collections import defaultdict
 from io import BytesIO
 from pathlib import Path
 
@@ -172,6 +174,197 @@ def _draw_collection_intro(pdf) -> None:
     pdf.showPage()
 
 
+def _meta(recipe: dict, key: str, default=""):
+    value = recipe.get(key)
+    if value not in (None, ""):
+        return value
+    return (recipe.get("metadata") or {}).get(key, default)
+
+
+def _recipe_traits(recipe: dict) -> dict:
+    """Return conservative, reproducible production metadata for legacy masters."""
+    ingredients = " ".join(str(i.get("name", "")).lower() for i in recipe.get("ingredients", []))
+    method = " ".join(str(s.get("text", "")) for s in recipe.get("method", []))
+    minute_values = [int(v) for v in re.findall(
+        r"(\d+)\s*(?:-|–|to)?\s*(?:\d+\s*)?minutes?", method, re.IGNORECASE
+    )]
+    cook = max(minute_values, default=15)
+    prep = 10 if len(recipe.get("ingredients", [])) <= 7 else 15
+    difficulty = "Easy" if len(recipe.get("method", [])) <= 4 else "Moderate"
+    vegetarian = not any(word in ingredients for word in (
+        "chicken", "turkey", "beef", "pork", "salmon", "cod", "haddock", "tuna",
+        "prawn", "fish", "lamb", "ham", "bacon", "mince",
+    ))
+    title = str(recipe.get("title", "")).lower()
+    freezer = any(word in title for word in ("curry", "stew", "soup", "bake", "meatball", "chilli"))
+    allergens: list[str] = []
+    groups = [
+        ("Milk", ("milk", "quark", "cheese", "yogurt", "yoghurt", "skyr", "cream")),
+        ("Egg", ("egg",)), ("Fish", ("salmon", "cod", "haddock", "tuna", "fish")),
+        ("Gluten", ("bread", "pasta", "couscous", "oats", "wrap", "barley")),
+        ("Peanuts / nuts", ("peanut", "almond", "walnut", "pecan", "pistachio", "cashew")),
+        ("Mustard", ("mustard",)), ("Soya", ("soy", "tofu")), ("Sesame", ("sesame",)),
+        ("Crustaceans", ("prawn", "shrimp")),
+    ]
+    for label, terms in groups:
+        if any(term in ingredients for term in terms):
+            allergens.append(label)
+    return {
+        "prep": int(_meta(recipe, "prep_time_minutes", prep)),
+        "cook": int(_meta(recipe, "cook_time_minutes", cook)),
+        "difficulty": _meta(recipe, "difficulty", difficulty),
+        "vegetarian": bool(_meta(recipe, "vegetarian_option", vegetarian)),
+        "freezer": bool(_meta(recipe, "freezer_friendly", freezer)),
+        "allergens": _meta(recipe, "allergen_note", ", ".join(allergens) or "No major allergens identified; check labels"),
+    }
+
+
+def _page_heading(pdf, eyebrow: str, title: str, subtitle: str = "") -> float:
+    width, height = letter
+    pdf.setFillColor(CREAM)
+    pdf.rect(0, 0, width, height, fill=1, stroke=0)
+    pdf.setFillColor(GOLD)
+    pdf.setFont("Helvetica-Bold", 9)
+    pdf.drawCentredString(width / 2, height - 0.8 * inch, eyebrow.upper())
+    pdf.setFillColor(NAVY)
+    y = height - 1.35 * inch
+    for line in _wrap_canvas_text(pdf, title, "Helvetica-Bold", 24, width - 1.5 * inch):
+        pdf.setFont("Helvetica-Bold", 24)
+        pdf.drawCentredString(width / 2, y, line)
+        y -= 0.36 * inch
+    if subtitle:
+        y -= 0.08 * inch
+        for line in _wrap_canvas_text(pdf, subtitle, "Helvetica", 10, width - 1.6 * inch):
+            pdf.setFillColor(CHARCOAL)
+            pdf.setFont("Helvetica", 10)
+            pdf.drawCentredString(width / 2, y, line)
+            y -= 0.18 * inch
+    return y - 0.25 * inch
+
+
+def _draw_text_page(pdf, eyebrow: str, title: str, sections: list[tuple[str, str]]) -> None:
+    width, _ = letter
+    y = _page_heading(pdf, eyebrow, title)
+    x = 0.8 * inch
+    content_w = width - 1.6 * inch
+    for heading, body in sections:
+        pdf.setFillColor(NAVY)
+        pdf.setFont("Helvetica-Bold", 13)
+        pdf.drawString(x, y, heading)
+        y -= 0.22 * inch
+        lines = _wrap_canvas_text(pdf, body, "Helvetica", 9.2, content_w)
+        y = _draw_lines(pdf, lines, x, y, "Helvetica", 9.2, 13, CHARCOAL) - 0.18 * inch
+    pdf.setFillColor(GOLD)
+    pdf.rect(1.7 * inch, 0.55 * inch, width - 3.4 * inch, 0.03 * inch, fill=1, stroke=0)
+    pdf.showPage()
+
+
+def _draw_programme_pages(pdf) -> None:
+    _draw_text_page(pdf, "Start here", "Your 30-Day Success Guide", [
+        ("The simple system", "Choose three planned meals each day, repeat favourites, shop from a written list and review the trend once a week—not after every meal."),
+        ("Five success rules", "Plan tomorrow before today ends. Measure calorie-dense ingredients. Keep a protein-led emergency meal ready. Compare weekly averages under similar conditions. If progress stalls for two weeks, review portions and adherence before making a large change."),
+        ("Weekly rhythm", "Friday: choose recipes and check supplies. Saturday: shop. Sunday: batch-cook one protein, one starch and one tray of vegetables. Midweek: top up fresh produce. Weekend: record progress and one lesson."),
+    ])
+    _draw_text_page(pdf, "The foundations", "Nutrition Basics", [
+        ("Energy and protein", "Fat loss requires a sustained energy deficit, while protein supports muscle retention and makes meals more satisfying. Nutrition values are per stated serving."),
+        ("Fibre, carbohydrate and fat", "Increase fibre gradually and drink enough fluid. Carbohydrate is useful fuel; portion it to the recipe and your needs. Measure oils, dressings, nuts and seeds."),
+        ("Safety", "This book provides general education, not individual medical advice. Speak with a GP or registered dietitian if pregnant, under 18, managing a medical condition, taking appetite or glucose medication, or with a history of disordered eating."),
+    ])
+    _draw_text_page(pdf, "Shop smarter", "UK Shopping System", [
+        ("Use any supermarket", "The system is supermarket-neutral and works at Tesco, Aldi, Lidl, Asda, Sainsbury’s, Morrisons and online grocers. Compare the nutrition panel, not the brand name."),
+        ("Shop in this order", "Produce; protein; carbohydrates; flavour builders; frozen and cupboard backup. Check your freezer, fridge and cupboards before leaving."),
+        ("Reduce waste", "Plan overlapping ingredients, freeze spare portions promptly, use delicate produce first and keep one flexible leftovers meal each week."),
+    ])
+
+
+def _schedule(recipes: list[dict]) -> list[tuple[int, dict, dict, dict]]:
+    groups = defaultdict(list)
+    for recipe in recipes:
+        groups[str(recipe.get("meal") or "Dinner").lower()].append(recipe)
+    breakfast = groups["breakfast"] or recipes
+    lunch = groups["lunch"] or groups["dinner"] or recipes
+    dinner = groups["dinner"] or recipes
+    return [(day, breakfast[(day - 1) % len(breakfast)], lunch[(day * 2 - 2) % len(lunch)], dinner[(day * 3 - 3) % len(dinner)]) for day in range(1, 31)]
+
+
+def _draw_plan_pages(pdf, schedule) -> None:
+    for week, start in enumerate(range(0, 30, 7), 1):
+        days = schedule[start:start + 7]
+        y = _page_heading(pdf, "Your programme", f"Week {week} · Day {days[0][0]}–{days[-1][0]}", "A complete daily rhythm; swap within the same meal category when useful.")
+        x = 0.55 * inch
+        widths = [0.45 * inch, 2.0 * inch, 2.0 * inch, 2.0 * inch]
+        rows = [["DAY", "BREAKFAST", "LUNCH", "DINNER"]]
+        for day, breakfast, lunch, dinner in days:
+            rows.append([str(day), f"{breakfast['recipe_id']}\n{breakfast['title']}", f"{lunch['recipe_id']}\n{lunch['title']}", f"{dinner['recipe_id']}\n{dinner['title']}"])
+        table = Table(rows, colWidths=widths, rowHeights=[0.32 * inch] + [0.7 * inch] * len(days))
+        table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), NAVY), ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("BACKGROUND", (0, 1), (-1, -1), colors.white), ("GRID", (0, 0), (-1, -1), 0.35, colors.HexColor("#D8CBAE")), ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("FONTNAME", (0, 1), (0, -1), "Helvetica-Bold"), ("FONTSIZE", (0, 0), (-1, -1), 7), ("LEADING", (0, 0), (-1, -1), 8.5), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("LEFTPADDING", (0, 0), (-1, -1), 5)]))
+        table.wrapOn(pdf, sum(widths), 6 * inch)
+        table.drawOn(pdf, x, y - (0.32 + 0.7 * len(days)) * inch)
+        pdf.showPage()
+
+
+def _draw_shopping_pages(pdf, schedule) -> None:
+    for week, start in enumerate(range(0, 30, 7), 1):
+        selected = schedule[start:start + 7]
+        items: dict[str, tuple[float, str]] = {}
+        for _, *meals in selected:
+            for recipe in meals:
+                for item in recipe.get("ingredients", []):
+                    key = str(item["name"]).strip()
+                    qty, unit = float(item.get("quantity", 0)), str(item.get("unit", ""))
+                    previous = items.get(key)
+                    items[key] = ((previous[0] + qty) if previous and previous[1] == unit else qty, unit)
+        y = _page_heading(pdf, "Weekly shopping list", f"Week {week}", "Quantities follow the scheduled single servings; scale for your household and planned leftovers.")
+        columns = [[], []]
+        for index, (name, (qty, unit)) in enumerate(sorted(items.items())):
+            columns[index % 2].append(f"□  {qty:g} {unit}  {name}")
+        for col, lines in enumerate(columns):
+            x = (0.65 + col * 3.85) * inch
+            yy = y
+            for line in lines[:26]:
+                yy = _draw_lines(pdf, _wrap_canvas_text(pdf, line, "Helvetica", 8.2, 3.25 * inch), x, yy, "Helvetica", 8.2, 10.2, CHARCOAL) - 2
+        pdf.showPage()
+
+
+def _draw_indexes(pdf, recipes: list[dict]) -> None:
+    indexes = [
+        ("Recipe Index · Meal", lambda r: (str(r.get("meal")), r["recipe_id"]), lambda r: f"{r['recipe_id']}  {r['meal']}  ·  {r['title']}"),
+        ("Recipe Index · Calories", lambda r: ((r.get("nutrition") or {}).get("energy_kcal", 0), r["recipe_id"]), lambda r: f"{r['recipe_id']}  {(r.get('nutrition') or {}).get('energy_kcal', 0):g} kcal  ·  {r['title']}"),
+        ("Recipe Index · Protein", lambda r: (-((r.get("nutrition") or {}).get("protein_g", 0)), r["recipe_id"]), lambda r: f"{r['recipe_id']}  {(r.get('nutrition') or {}).get('protein_g', 0):g} g protein  ·  {r['title']}"),
+        ("Recipe Index · Total Time", lambda r: (_recipe_traits(r)["prep"] + _recipe_traits(r)["cook"], r["recipe_id"]), lambda r: f"{r['recipe_id']}  {_recipe_traits(r)['prep'] + _recipe_traits(r)['cook']} min  ·  {r['title']}"),
+    ]
+    for title, key, label in indexes:
+        ordered = sorted(recipes, key=key)
+        for chunk_index in range(0, len(ordered), 40):
+            chunk = ordered[chunk_index:chunk_index + 40]
+            y = _page_heading(pdf, "Find your fit", title, f"Part {chunk_index // 40 + 1} of 2")
+            for i, recipe in enumerate(chunk):
+                x = 0.65 * inch if i < 20 else 4.15 * inch
+                yy = y - (i % 20) * 0.27 * inch
+                pdf.setFillColor(CHARCOAL)
+                pdf.setFont("Helvetica", 7.6)
+                pdf.drawString(x, yy, label(recipe)[:62])
+            pdf.showPage()
+
+
+def _draw_tracker_and_faq(pdf) -> None:
+    y = _page_heading(pdf, "Track the trend", "30-Day Progress Tracker", "Use weekly averages and simple adherence notes—not single-day noise.")
+    rows = [["DAY", "WEIGHT", "WAIST", "ENERGY", "SLEEP", "STEPS", "MEALS ✓"]] + [[str(i), "", "", "", "", "", ""] for i in range(1, 31)]
+    table = Table(rows, colWidths=[0.45 * inch] + [0.95 * inch] * 6, rowHeights=[0.25 * inch] + [0.16 * inch] * 30)
+    table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), NAVY), ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("GRID", (0, 0), (-1, -1), 0.3, colors.HexColor("#C9C1B1")), ("FONTSIZE", (0, 0), (-1, -1), 6.5), ("ALIGN", (0, 0), (-1, -1), "CENTER")]))
+    table.wrapOn(pdf, 7 * inch, 6 * inch)
+    table.drawOn(pdf, 0.65 * inch, y - 5.05 * inch)
+    pdf.showPage()
+    _draw_text_page(pdf, "Quick answers", "Frequently Asked Questions", [
+        ("Do I need to eat every recipe?", "No. The plan is a structured menu, not a rulebook. Swap within breakfast, lunch or dinner and keep portions consistent."),
+        ("What if hunger is high?", "Check sleep, hydration, meal timing and fibre. Add non-starchy vegetables or discuss individual needs with a qualified professional."),
+        ("Can I batch cook?", "Yes. Follow each Meal Prep card, cool cooked food promptly, refrigerate at 5°C or below and reheat only as directed."),
+        ("What if weight stalls?", "Compare weekly averages for at least two consistent weeks, then review adherence and portions before changing the plan."),
+        ("How do swaps affect nutrition?", "Ingredient swaps are practical alternatives, not nutrition-equivalent guarantees. Recalculate nutrition when accuracy matters."),
+        ("How should allergens be used?", "Allergen notes are screening aids only. Always check packaging and avoid cross-contamination according to your needs."),
+    ])
+
+
 def _draw_photo(pdf, image_path: Path | None, x: float, y: float, width: float,
                 height: float) -> None:
     if not image_path:
@@ -230,8 +423,9 @@ def _draw_recipe_page(pdf, recipe: dict, image_path: Path | None, page_number: i
     y = block_top
     pdf.setFillColor(CREAM)
     pdf.roundRect(info_x, y - 0.55 * inch, text_w, 0.55 * inch, 5, fill=1, stroke=0)
-    meta = [("MEAL", recipe.get("meal") or "-"), ("SERVES", recipe.get("servings", 1)),
-            ("INGREDIENTS", len(recipe.get("ingredients", [])))]
+    traits = _recipe_traits(recipe)
+    meta = [("MEAL", recipe.get("meal") or "-"), ("TOTAL TIME", f"{traits['prep'] + traits['cook']} min"),
+            ("DIFFICULTY", traits["difficulty"])]
     cell = text_w / 3
     for index, (label, value) in enumerate(meta):
         centre = info_x + cell * index + cell / 2
@@ -251,8 +445,8 @@ def _draw_recipe_page(pdf, recipe: dict, image_path: Path | None, page_number: i
     nutrition_items = [
         ("KCAL", nutrition.get("energy_kcal", "-")),
         ("PROTEIN", f"{nutrition.get('protein_g', '-')} g"),
-        ("CARBS", f"{nutrition.get('carbohydrate_g', '-')} g"),
-        ("FAT", f"{nutrition.get('fat_g', '-')} g"),
+        ("FIBRE", f"{nutrition.get('fibre_g', '-')} g"),
+        ("PREP / COOK", f"{traits['prep']} / {traits['cook']} min"),
     ]
     card_w = (text_w - 3 * 4) / 4
     for index, (label, value) in enumerate(nutrition_items):
@@ -269,9 +463,10 @@ def _draw_recipe_page(pdf, recipe: dict, image_path: Path | None, page_number: i
 
     panels = [
         ("CHEF'S TIP", recipe.get("chef_tip")),
+        ("COMMON MISTAKE", _meta(recipe, "common_mistake")),
         ("INGREDIENT SWAP", recipe.get("ingredient_swap")),
         ("MEAL PREP", recipe.get("meal_prep")),
-        ("SERVING IDEA", recipe.get("serving_suggestion") or recipe.get("serving")),
+        ("SERVING SUGGESTION", _meta(recipe, "serving_suggestion") or recipe.get("serving")),
     ]
     for label, value in panels:
         if not value:
@@ -284,6 +479,17 @@ def _draw_recipe_page(pdf, recipe: dict, image_path: Path | None, page_number: i
                         CHARCOAL, 3) - 0.08 * inch
         if y < photo_y + 0.12 * inch:
             break
+
+    badge_y = photo_y + 0.08 * inch
+    badges = [
+        "FREEZER-FRIENDLY" if traits["freezer"] else "BEST FRESH",
+        "VEGETARIAN" if traits["vegetarian"] else "VEGETARIAN SWAP AVAILABLE",
+    ]
+    pdf.setFont("Helvetica-Bold", 5.8)
+    pdf.setFillColor(GREEN)
+    pdf.drawString(info_x, badge_y, "  •  ".join(badges))
+    allergen_lines = _wrap_canvas_text(pdf, f"ALLERGEN NOTE: {traits['allergens']}", "Helvetica", 5.8, text_w)
+    _draw_lines(pdf, allergen_lines, info_x, badge_y - 0.12 * inch, "Helvetica", 5.8, 7, CHARCOAL, 2)
 
     lower_top = photo_y - 0.38 * inch
     lower_bottom = 0.62 * inch
@@ -335,6 +541,11 @@ def _build_luxury_pdf(database: Path, output: Path, coverage_report_path=None) -
     pdf.setAuthor("Project Physique")
     _draw_cover(pdf)
     _draw_collection_intro(pdf)
+    _draw_programme_pages(pdf)
+    schedule = _schedule(recipes)
+    _draw_plan_pages(pdf, schedule)
+    _draw_shopping_pages(pdf, schedule)
+    _draw_indexes(pdf, recipes)
     found_images: list[dict[str, str]] = []
     missing_images: list[str] = []
     for index, recipe in enumerate(recipes):
@@ -344,6 +555,7 @@ def _build_luxury_pdf(database: Path, output: Path, coverage_report_path=None) -
         else:
             missing_images.append(recipe["recipe_id"])
         _draw_recipe_page(pdf, recipe, image_path, index + 1, photo_right=bool(index % 2))
+    _draw_tracker_and_faq(pdf)
     pdf.save()
     if coverage_report_path:
         report = Path(coverage_report_path).expanduser().resolve()
