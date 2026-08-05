@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import os
 
+from pp_aipp.ai_photography import application_dir, default_local_python
 from pp_aipp.build_pipeline import build_gold_master_book
 from pp_aipp.export_engine import export_book_package
 from pp_aipp.gold_master import GoldMasterProject
-from pp_aipp.ai_photography import application_dir, default_local_python
 from pp_aipp.photography import import_photo_assets, prepare_next_photo_batch
 
 from .ai_photo_worker import AIPhotoWorker
