@@ -47,13 +47,26 @@ def export_book_package(project_root: str | Path, built_book: str | Path) -> Exp
     stem = source.stem.removesuffix("_Built")
     book_path = export_dir / f"{stem}_Export.docx"
     pdf_path = export_dir / f"{stem}_Print.pdf"
+    layout_reference_path = export_dir / f"{stem}_Premium_Layout_Reference.pdf"
     publishing_readme_path = export_dir / "PUBLISHING_README.txt"
     image_coverage_path = export_dir / "image_coverage_report.json"
     manifest_path = export_dir / "export_manifest.json"
     package_path = export_dir / f"{stem}_Export_Package.zip"
     shutil.copy2(source, book_path)
     verified_pdf = source.with_suffix(".pdf")
-    if verified_pdf.is_file():
+    image_dir = root / "images"
+    has_recipe_images = any(
+        next(image_dir.glob(f"PP-R[0-9][0-9][0-9]{extension}"), None) is not None
+        for extension in (".jpg", ".jpeg", ".png", ".webp")
+    )
+    if verified_pdf.is_file() and has_recipe_images:
+        shutil.copy2(verified_pdf, layout_reference_path)
+        build_publishing_pdf(
+            root / "data" / "project.sqlite3",
+            pdf_path,
+            coverage_report_path=image_coverage_path,
+        )
+    elif verified_pdf.is_file():
         shutil.copy2(verified_pdf, pdf_path)
         image_coverage_path.write_text(
             json.dumps(
@@ -92,6 +105,8 @@ def export_book_package(project_root: str | Path, built_book: str | Path) -> Exp
         (publishing_readme_path, publishing_readme_path.name),
         (image_coverage_path, image_coverage_path.name),
     ]
+    if layout_reference_path.is_file():
+        files.append((layout_reference_path, layout_reference_path.name))
     qa_dir = root / "qa"
     for report_name in ("gold_master_import_report.json", "layout_build_report.json"):
         report = qa_dir / report_name

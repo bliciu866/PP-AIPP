@@ -1,6 +1,13 @@
 
 # Changelog
 
+## 3.0.0b8 — 2026-08-05
+
+- Fixed Premium Schema export bypassing the photography renderer when a companion PDF exists.
+- The main `*_Print.pdf` now renders imported recipe photographs whenever photography assets are present.
+- The supplied Premium PDF is preserved separately as `*_Premium_Layout_Reference.pdf`.
+- Added regression coverage for combined Premium layout and photography exports.
+
 ## 3.0.0b7 — 2026-08-05
 
 - Added Gold Master Premium v5 schema detection.
