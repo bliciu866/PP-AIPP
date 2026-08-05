@@ -1,6 +1,14 @@
 
 # Changelog
 
+## 3.0.0b9 — 2026-08-05
+
+- Added the B3.2 Luxury Editorial Photo Layout Engine.
+- Added a branded navy-and-gold cover and recipe collection opener.
+- Added alternating left/right 4:5 hero photography layouts.
+- Replaced stacked technical output with premium metadata, nutrition and editorial cards.
+- Added two-column ingredients and method panels with one recipe per page.
+
 ## 3.0.0b8 — 2026-08-05
 
 - Fixed Premium Schema export bypassing the photography renderer when a companion PDF exists.

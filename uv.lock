@@ -611,7 +611,7 @@ wheels = [
 
 [[package]]
 name = "pp-aipp"
-version = "3.0.0b8"
+version = "3.0.0b9"
 source = { editable = "." }
 dependencies = [
     { name = "openai" },

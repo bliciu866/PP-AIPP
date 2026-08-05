@@ -2,13 +2,18 @@
 from __future__ import annotations
 
 import json
+from io import BytesIO
 from pathlib import Path
 
+from PIL import Image as PILImage
+from PIL import ImageOps
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
+from reportlab.lib.utils import ImageReader
+from reportlab.pdfgen import canvas
 from reportlab.platypus import (
     Image,
     KeepTogether,
@@ -27,6 +32,10 @@ SAGE = colors.HexColor("#EAF5EA")
 CHARCOAL = colors.HexColor("#2E2E2E")
 GREY = colors.HexColor("#F3F3F3")
 IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".webp")
+NAVY = colors.HexColor("#102A43")
+GOLD = colors.HexColor("#B98216")
+CREAM = colors.HexColor("#F7F2E8")
+PALE_BLUE = colors.HexColor("#EAF0F5")
 
 
 def _text(value: object) -> str:
@@ -84,6 +93,273 @@ def _hero_block(recipe: dict, image_path: Path | None, styles: dict) -> Table:
     return block
 
 
+def _wrap_canvas_text(pdf, text: object, font: str, size: float, width: float) -> list[str]:
+    words = str(text or "").split()
+    lines: list[str] = []
+    current = ""
+    for word in words:
+        candidate = f"{current} {word}".strip()
+        if pdf.stringWidth(candidate, font, size) <= width:
+            current = candidate
+        elif current:
+            lines.append(current)
+            current = word
+        else:
+            lines.append(word)
+            current = ""
+    if current:
+        lines.append(current)
+    return lines or [""]
+
+
+def _draw_lines(pdf, lines: list[str], x: float, y: float, font: str, size: float,
+                leading: float, colour=CHARCOAL, max_lines: int | None = None) -> float:
+    pdf.setFont(font, size)
+    pdf.setFillColor(colour)
+    selected = lines[:max_lines] if max_lines else lines
+    for line in selected:
+        pdf.drawString(x, y, line)
+        y -= leading
+    return y
+
+
+def _draw_cover(pdf) -> None:
+    width, height = letter
+    pdf.setFillColor(NAVY)
+    pdf.rect(0, 0, width, height, fill=1, stroke=0)
+    pdf.setFillColor(GOLD)
+    pdf.rect(0.68 * inch, 0.72 * inch, 0.08 * inch, height - 1.44 * inch, fill=1, stroke=0)
+    pdf.setFont("Helvetica-Bold", 13)
+    pdf.drawString(1.05 * inch, height - 1.15 * inch, "PROJECT PHYSIQUE(TM)")
+    pdf.setFillColor(colors.white)
+    pdf.setFont("Helvetica-Bold", 38)
+    pdf.drawString(1.05 * inch, height - 2.35 * inch, "30 DAYS")
+    pdf.drawString(1.05 * inch, height - 2.92 * inch, "FAT LOSS")
+    pdf.setFillColor(GOLD)
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(1.06 * inch, height - 3.38 * inch, "LUXURY PHOTO EDITION")
+    pdf.setFillColor(colors.white)
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(1.06 * inch, height - 4.08 * inch, "80 nutrition-verified recipes")
+    pdf.drawString(1.06 * inch, height - 4.34 * inch, "Designed for real UK kitchens")
+    pdf.setFillColor(colors.HexColor("#D7E2EA"))
+    pdf.setFont("Helvetica", 9)
+    pdf.drawString(1.06 * inch, 1.12 * inch, "PREMIUM EDITORIAL SYSTEM  /  UK ENGLISH  /  CoFID-ALIGNED")
+    pdf.showPage()
+
+
+def _draw_collection_intro(pdf) -> None:
+    width, height = letter
+    pdf.setFillColor(CREAM)
+    pdf.rect(0, 0, width, height, fill=1, stroke=0)
+    pdf.setFillColor(GOLD)
+    pdf.setFont("Helvetica-Bold", 10)
+    pdf.drawCentredString(width / 2, height - 1.22 * inch, "THE RECIPE COLLECTION")
+    pdf.setFillColor(NAVY)
+    pdf.setFont("Helvetica-Bold", 27)
+    pdf.drawCentredString(width / 2, height - 2.05 * inch, "Eighty ways to make")
+    pdf.drawCentredString(width / 2, height - 2.48 * inch, "consistency taste better")
+    pdf.setFillColor(CHARCOAL)
+    pdf.setFont("Helvetica", 11)
+    pdf.drawCentredString(width / 2, height - 3.25 * inch, "High-protein food, realistic shopping and repeatable progress.")
+    pdf.setFillColor(NAVY)
+    pdf.roundRect(1.05 * inch, height - 4.35 * inch, width - 2.1 * inch, 0.46 * inch, 5, fill=1, stroke=0)
+    pdf.setFillColor(colors.white)
+    pdf.setFont("Helvetica-Bold", 9)
+    pdf.drawCentredString(width / 2, height - 4.07 * inch, "BREAKFAST     /     LUNCH     /     DINNER")
+    pdf.setFillColor(GOLD)
+    pdf.rect(2.2 * inch, 1.5 * inch, width - 4.4 * inch, 0.04 * inch, fill=1, stroke=0)
+    pdf.showPage()
+
+
+def _draw_photo(pdf, image_path: Path | None, x: float, y: float, width: float,
+                height: float) -> None:
+    if not image_path:
+        pdf.setFillColor(PALE_BLUE)
+        pdf.roundRect(x, y, width, height, 8, fill=1, stroke=0)
+        pdf.setFillColor(NAVY)
+        pdf.setFont("Helvetica-Bold", 11)
+        pdf.drawCentredString(x + width / 2, y + height / 2, "PHOTO ASSET")
+        return
+    with PILImage.open(image_path) as source:
+        fitted = ImageOps.fit(source.convert("RGB"), (900, 1125), method=PILImage.Resampling.LANCZOS)
+        buffer = BytesIO()
+        fitted.save(buffer, format="JPEG", quality=90, optimize=True)
+        buffer.seek(0)
+        pdf.drawImage(ImageReader(buffer), x, y, width, height, preserveAspectRatio=False, mask="auto")
+
+
+def _draw_recipe_page(pdf, recipe: dict, image_path: Path | None, page_number: int,
+                      photo_right: bool) -> None:
+    page_width, page_height = letter
+    margin = 0.58 * inch
+    usable = page_width - 2 * margin
+    photo_w = 3.05 * inch
+    photo_h = 3.81 * inch
+    gap = 0.24 * inch
+    text_w = usable - photo_w - gap
+    photo_x = page_width - margin - photo_w if photo_right else margin
+    info_x = margin if photo_right else photo_x + photo_w + gap
+    top = page_height - 0.55 * inch
+
+    pdf.setFillColor(NAVY)
+    pdf.setFont("Helvetica-Bold", 8)
+    pdf.drawString(margin, top, "PROJECT PHYSIQUE(TM)  /  LUXURY PHOTO EDITION")
+    pdf.setFillColor(GOLD)
+    pdf.drawRightString(page_width - margin, top, str(recipe.get("recipe_id") or ""))
+    top -= 0.23 * inch
+    pdf.setStrokeColor(GOLD)
+    pdf.setLineWidth(1.2)
+    pdf.line(margin, top, page_width - margin, top)
+    # Leave a deliberate editorial gutter between the rule and the headline.
+    # The previous offset let tall Helvetica capitals visually touch the rule.
+    top -= 0.30 * inch
+
+    title_lines = _wrap_canvas_text(pdf, recipe.get("title"), "Helvetica-Bold", 20, usable)
+    top = _draw_lines(pdf, title_lines, margin, top, "Helvetica-Bold", 20, 22, NAVY, 2)
+    description = _wrap_canvas_text(pdf, recipe.get("description"), "Helvetica-Oblique", 8, usable)
+    top = _draw_lines(pdf, description, margin, top - 2, "Helvetica-Oblique", 8, 10, colors.HexColor("#65727C"), 2)
+    block_top = min(top - 0.14 * inch, page_height - 1.65 * inch)
+    photo_y = block_top - photo_h
+    _draw_photo(pdf, image_path, photo_x, photo_y, photo_w, photo_h)
+    pdf.setFillColor(NAVY)
+    pdf.setFont("Helvetica-Bold", 7)
+    pdf.drawCentredString(photo_x + photo_w / 2, photo_y - 0.13 * inch,
+                          f"{recipe.get('recipe_id')}  /  SIGNATURE RECIPE")
+
+    y = block_top
+    pdf.setFillColor(CREAM)
+    pdf.roundRect(info_x, y - 0.55 * inch, text_w, 0.55 * inch, 5, fill=1, stroke=0)
+    meta = [("MEAL", recipe.get("meal") or "-"), ("SERVES", recipe.get("servings", 1)),
+            ("INGREDIENTS", len(recipe.get("ingredients", [])))]
+    cell = text_w / 3
+    for index, (label, value) in enumerate(meta):
+        centre = info_x + cell * index + cell / 2
+        pdf.setFillColor(GOLD)
+        pdf.setFont("Helvetica-Bold", 6.5)
+        pdf.drawCentredString(centre, y - 0.17 * inch, label)
+        pdf.setFillColor(NAVY)
+        pdf.setFont("Helvetica-Bold", 9)
+        pdf.drawCentredString(centre, y - 0.37 * inch, str(value).title())
+    y -= 0.72 * inch
+
+    nutrition = recipe.get("nutrition") or {}
+    pdf.setFillColor(NAVY)
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(info_x, y, "NUTRITION PER SERVING")
+    y -= 0.18 * inch
+    nutrition_items = [
+        ("KCAL", nutrition.get("energy_kcal", "-")),
+        ("PROTEIN", f"{nutrition.get('protein_g', '-')} g"),
+        ("CARBS", f"{nutrition.get('carbohydrate_g', '-')} g"),
+        ("FAT", f"{nutrition.get('fat_g', '-')} g"),
+    ]
+    card_w = (text_w - 3 * 4) / 4
+    for index, (label, value) in enumerate(nutrition_items):
+        card_x = info_x + index * (card_w + 4)
+        pdf.setFillColor(SAGE)
+        pdf.roundRect(card_x, y - 0.48 * inch, card_w, 0.48 * inch, 3, fill=1, stroke=0)
+        pdf.setFillColor(GREEN)
+        pdf.setFont("Helvetica-Bold", 6)
+        pdf.drawCentredString(card_x + card_w / 2, y - 0.14 * inch, label)
+        pdf.setFillColor(NAVY)
+        pdf.setFont("Helvetica-Bold", 8)
+        pdf.drawCentredString(card_x + card_w / 2, y - 0.34 * inch, str(value))
+    y -= 0.67 * inch
+
+    panels = [
+        ("CHEF'S TIP", recipe.get("chef_tip")),
+        ("INGREDIENT SWAP", recipe.get("ingredient_swap")),
+        ("MEAL PREP", recipe.get("meal_prep")),
+        ("SERVING IDEA", recipe.get("serving_suggestion") or recipe.get("serving")),
+    ]
+    for label, value in panels:
+        if not value:
+            continue
+        pdf.setFillColor(GOLD if label == "CHEF'S TIP" else NAVY)
+        pdf.setFont("Helvetica-Bold", 6.5)
+        pdf.drawString(info_x, y, label)
+        lines = _wrap_canvas_text(pdf, value, "Helvetica", 7.2, text_w)
+        y = _draw_lines(pdf, lines, info_x, y - 0.13 * inch, "Helvetica", 7.2, 8.5,
+                        CHARCOAL, 3) - 0.08 * inch
+        if y < photo_y + 0.12 * inch:
+            break
+
+    lower_top = photo_y - 0.38 * inch
+    lower_bottom = 0.62 * inch
+    lower_height = lower_top - lower_bottom
+    col_gap = 0.28 * inch
+    col_w = (usable - col_gap) / 2
+    left_x = margin
+    right_x = margin + col_w + col_gap
+    pdf.setFillColor(CREAM)
+    pdf.roundRect(left_x, lower_bottom, col_w, lower_height, 6, fill=1, stroke=0)
+    pdf.setFillColor(PALE_BLUE)
+    pdf.roundRect(right_x, lower_bottom, col_w, lower_height, 6, fill=1, stroke=0)
+    pdf.setFillColor(NAVY)
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(left_x + 0.13 * inch, lower_top - 0.22 * inch, "INGREDIENTS")
+    pdf.drawString(right_x + 0.13 * inch, lower_top - 0.22 * inch, "METHOD")
+    ing_y = lower_top - 0.42 * inch
+    for item in recipe.get("ingredients", []):
+        quantity = f"{item['quantity']:g} {item['unit']}"
+        line = f"{quantity}  {item['name']}"
+        wrapped = _wrap_canvas_text(pdf, line, "Helvetica", 7.2, col_w - 0.26 * inch)
+        if ing_y - len(wrapped) * 8 < lower_bottom + 0.08 * inch:
+            break
+        ing_y = _draw_lines(pdf, wrapped, left_x + 0.13 * inch, ing_y, "Helvetica", 7.2, 8.2,
+                            CHARCOAL) - 1.5
+    method_y = lower_top - 0.42 * inch
+    for step in recipe.get("method", []):
+        line = f"{step['number']}. {step['text']}"
+        wrapped = _wrap_canvas_text(pdf, line, "Helvetica", 7.1, col_w - 0.26 * inch)
+        if method_y - len(wrapped) * 8 < lower_bottom + 0.08 * inch:
+            break
+        method_y = _draw_lines(pdf, wrapped, right_x + 0.13 * inch, method_y, "Helvetica", 7.1,
+                               8.1, CHARCOAL) - 3
+    pdf.setFillColor(colors.HexColor("#66727C"))
+    pdf.setFont("Helvetica", 7)
+    pdf.drawCentredString(page_width / 2, 0.28 * inch,
+                          f"PROJECT PHYSIQUE(TM)  /  30 DAYS FAT LOSS  /  {page_number}")
+    pdf.showPage()
+
+
+def _build_luxury_pdf(database: Path, output: Path, coverage_report_path=None) -> Path:
+    project_root = database.parent.parent
+    recipes = LayoutRecipeRepository(database).list_recipes()
+    if not recipes:
+        raise ValueError("No recipes found for PDF export")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    pdf = canvas.Canvas(str(output), pagesize=letter, pageCompression=1)
+    pdf.setTitle("Project Physique - 30 Days Fat Loss - Luxury Photo Edition")
+    pdf.setAuthor("Project Physique")
+    _draw_cover(pdf)
+    _draw_collection_intro(pdf)
+    found_images: list[dict[str, str]] = []
+    missing_images: list[str] = []
+    for index, recipe in enumerate(recipes):
+        image_path = _recipe_image(project_root, recipe)
+        if image_path:
+            found_images.append({"recipe_id": recipe["recipe_id"], "path": str(image_path)})
+        else:
+            missing_images.append(recipe["recipe_id"])
+        _draw_recipe_page(pdf, recipe, image_path, index + 1, photo_right=bool(index % 2))
+    pdf.save()
+    if coverage_report_path:
+        report = Path(coverage_report_path).expanduser().resolve()
+        report.parent.mkdir(parents=True, exist_ok=True)
+        report.write_text(json.dumps({
+            "schema_version": 2,
+            "layout": "luxury_editorial_photo",
+            "total_recipes": len(recipes),
+            "images_found": len(found_images),
+            "images_missing": len(missing_images),
+            "found": found_images,
+            "missing_recipe_ids": missing_images,
+        }, indent=2) + "\n", encoding="utf-8")
+    return output
+
+
 def build_publishing_pdf(
     database_path: str | Path,
     output_path: str | Path,
@@ -93,6 +369,7 @@ def build_publishing_pdf(
     """Render all persisted recipes to a portable US Letter publishing PDF."""
     database = Path(database_path).expanduser().resolve()
     output = Path(output_path).expanduser().resolve()
+    return _build_luxury_pdf(database, output, coverage_report_path)
     project_root = database.parent.parent
     recipes = LayoutRecipeRepository(database).list_recipes()
     if not recipes:

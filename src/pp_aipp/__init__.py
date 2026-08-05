@@ -1,3 +1,3 @@
 """Project Physique AI Publishing Platform."""
 
-__version__ = "3.0.0b8"
+__version__ = "3.0.0b9"
