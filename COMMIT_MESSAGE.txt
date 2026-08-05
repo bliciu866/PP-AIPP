@@ -1,2 +1,1 @@
-ci(windows): activate PP-AIPP EXE workflow
-PP-AIPP v3.0.0-beta.6 B2.5 80-Recipe Photography Campaign
+PP-AIPP v3.0.0-beta.6 B2.8 Local Free AI Photo Engine

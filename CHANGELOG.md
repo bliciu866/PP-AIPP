@@ -1,6 +1,13 @@
 
 # Changelog
 
+## 3.0.0b6.post9 — 2026-08-05
+
+- Added Beta B2.8 Local Free AI recipe-photo generation with Stable Diffusion.
+- Added one-click Windows setup for the local model and all required libraries.
+- Added resumable batch generation that skips existing PP-R001–PP-R080 assets.
+- Kept the optional OpenAI Images API backend for users who prefer a hosted service.
+
 ## 3.0.0b6.post7 — 2026-08-04
 
 - Added the Beta B2.6 Photo Batch Planner for the remaining PP-R001–PP-R080 campaign.
@@ -126,6 +133,14 @@
 - Provider-neutral AI gateway contracts and provenance model.
 - CLI commands: `doctor`, `workspace create/list`, `plugins list`, `job demo`.
 - Initial test suite and GitHub Actions workflow.
+# 3.0.0b6.post8 — Beta B2.7
+
+- Added a one-click, resumable AI photography campaign for all missing recipes.
+- Added recipe-aware `gpt-image-2` prompts and automatic `PP-Rxxx` naming.
+- Added production 4:5 image preparation and direct PDF/export integration.
+- Added retries, checkpoints, coverage reports, and skip-existing behavior.
+- API keys are accepted at runtime and are never stored or logged.
+
 # 3.0.0b6.post4 — Beta B2.3
 
 - Added bulk photography import with automatic PP-R001–PP-R080 assignment.

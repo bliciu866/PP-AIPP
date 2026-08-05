@@ -5,13 +5,20 @@ from pathlib import Path
 
 project_root = Path(SPECPATH)
 resource_file = project_root / "src" / "pp_aipp" / "resources" / "default.yaml"
+local_runner = project_root / "scripts" / "local_ai_runner.py"
 
 a = Analysis(
     [str(project_root / "pp_aipp_desktop_entry.py")],
     pathex=[str(project_root / "src")],
     binaries=[],
-    datas=[(str(resource_file), "pp_aipp/resources")],
-    hiddenimports=["PySide6.QtCore", "PySide6.QtGui", "PySide6.QtWidgets"],
+    datas=[(str(resource_file), "pp_aipp/resources"), (str(local_runner), ".")],
+    hiddenimports=[
+        "PySide6.QtCore",
+        "PySide6.QtGui",
+        "PySide6.QtWidgets",
+        "openai",
+        "openai.resources.images",
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

@@ -54,6 +54,8 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path package
           Copy-Item dist/PP-AIPP.exe package/PP-AIPP.exe
+          Copy-Item SETUP_LOCAL_AI.bat package/SETUP_LOCAL_AI.bat
+          Copy-Item scripts/local_ai_runner.py package/local_ai_runner.py
           if (Test-Path README.md) { Copy-Item README.md package/README.md }
           if (Test-Path LICENSE) { Copy-Item LICENSE package/LICENSE }
           Compress-Archive -Path package/* -DestinationPath PP-AIPP-Windows-Portable.zip -Force
@@ -61,7 +63,7 @@ jobs:
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PP-AIPP-Windows-beta.6-B2.6
+          name: PP-AIPP-Windows-beta.6-B2.8
           path: |
             dist/PP-AIPP.exe
             PP-AIPP-Windows-Portable.zip
