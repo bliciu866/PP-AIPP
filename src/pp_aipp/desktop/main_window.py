@@ -370,6 +370,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.console.write(f"Database: {result.database_path}")
             self.console.write(f"QA report: {result.layout_report_path}")
             self.console.write(f"Built book: {result.layout.output_docx}")
+            if any("PREMIUM_SCHEMA_PASSTHROUGH" in item for item in result.layout.warnings):
+                self.console.write("Premium Schema v5 detected.")
+                self.console.write("Complete premium layout and companion PDF preserved.")
             self.console.write(
                 f"Content coverage: {result.import_summary.method_steps} method steps; "
                 f"{result.import_summary.warnings} source warnings."

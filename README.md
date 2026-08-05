@@ -1,4 +1,12 @@
-# PP-AIPP v3.0.0-beta.3 — Windows App Builder
+# PP-AIPP v3.0.0-beta.7 B3 — Premium Schema Upgrade
+
+## Gold Master Premium v5 support
+
+Beta B3 preserves the complete controlled Premium v5 DOCX during Build Book,
+including Chefie's Tips, Common Mistakes, Ingredient Swaps, Meal-Prep Notes,
+Serving Suggestions, the Success Guide, Nutrition Basics, UK Shopping System,
+Progress Tracker and FAQ. When the verified `*_Preview.pdf` is stored beside the
+DOCX during import, Export reuses that PDF without legacy recipe-only reflow.
 
 PP-AIPP is the Project Physique AI Publishing Platform desktop framework.
 

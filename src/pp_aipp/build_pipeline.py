@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 import re
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
+
+from docx import Document
 
 from .domain import ProjectDatabase
 from .layout import LayoutBuildResult, LayoutEngine
@@ -23,6 +26,26 @@ class BookBuildPipelineResult:
 def _book_id(project_root: Path) -> str:
     value = re.sub(r"[^a-z0-9]+", "-", project_root.name.lower()).strip("-")
     return value or "project-physique-book"
+
+
+def _is_premium_schema(source: Path) -> bool:
+    """Return True only for the controlled v5 premium editorial schema."""
+    document = Document(source)
+    fragments = [paragraph.text for paragraph in document.paragraphs]
+    fragments.extend(cell.text for table in document.tables for row in table.rows for cell in row.cells)
+    text = "\n".join(fragments).upper()
+    return all(
+        marker in text
+        for marker in (
+            "CHEFIE’S TIP",
+            "COMMON MISTAKE",
+            "INGREDIENT SWAP",
+            "SERVING SUGGESTION",
+            "30-DAY SUCCESS GUIDE",
+            "UK SHOPPING SYSTEM",
+            "30-DAY PROGRESS TRACKER",
+        )
+    )
 
 
 def build_gold_master_book(
@@ -67,7 +90,26 @@ def build_gold_master_book(
     if summary.imported_recipes == 0:
         raise ValueError("Gold Master contains no importable recipes")
 
-    layout = LayoutEngine(database_path).build_book(output_docx, book_id=book_id, pdf=False)
+    if _is_premium_schema(source):
+        # Premium passthrough mode is deliberate: the source already contains
+        # publication layout, front/back matter and recipe callouts that the
+        # legacy database renderer cannot represent without data loss.
+        shutil.copy2(source, output_docx)
+        preview = source.with_suffix(".preview.pdf")
+        output_pdf = output_docx.with_suffix(".pdf")
+        if preview.is_file():
+            shutil.copy2(preview, output_pdf)
+        else:
+            output_pdf = None
+        layout = LayoutBuildResult(
+            output_docx=output_docx,
+            output_pdf=output_pdf,
+            recipe_count=summary.imported_recipes,
+            page_breaks=0,
+            warnings=["PREMIUM_SCHEMA_PASSTHROUGH: complete editorial layout preserved"],
+        )
+    else:
+        layout = LayoutEngine(database_path).build_book(output_docx, book_id=book_id, pdf=False)
     LayoutEngine.write_report(layout, layout_report)
     return BookBuildPipelineResult(
         book_id=book_id,

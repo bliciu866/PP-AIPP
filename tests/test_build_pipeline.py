@@ -45,3 +45,28 @@ def test_pipeline_builds_docx_database_and_reports(tmp_path):
     assert result.database_path.is_file()
     assert result.import_report_path.is_file()
     assert result.layout_report_path.is_file()
+
+
+def test_pipeline_preserves_premium_schema_and_verified_pdf(tmp_path):
+    project = tmp_path / "premium"
+    source = _source(tmp_path / "premium.docx")
+    document = Document(source)
+    for marker in (
+        "CHEFIE’S TIP",
+        "COMMON MISTAKE",
+        "INGREDIENT SWAP",
+        "SERVING SUGGESTION",
+        "Your 30-Day Success Guide",
+        "UK Shopping System",
+        "30-Day Progress Tracker",
+    ):
+        document.add_paragraph(marker)
+    document.save(source)
+    preview = source.with_suffix(".preview.pdf")
+    preview.write_bytes(b"%PDF-1.4 premium\n")
+
+    result = build_gold_master_book(project, source, strict_collection=False)
+
+    assert result.layout.output_docx.read_bytes() == source.read_bytes()
+    assert result.layout.output_pdf.read_bytes() == preview.read_bytes()
+    assert "PREMIUM_SCHEMA_PASSTHROUGH" in result.layout.warnings[0]

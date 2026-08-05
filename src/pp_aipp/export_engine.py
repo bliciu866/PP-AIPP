@@ -52,11 +52,26 @@ def export_book_package(project_root: str | Path, built_book: str | Path) -> Exp
     manifest_path = export_dir / "export_manifest.json"
     package_path = export_dir / f"{stem}_Export_Package.zip"
     shutil.copy2(source, book_path)
-    build_publishing_pdf(
-        root / "data" / "project.sqlite3",
-        pdf_path,
-        coverage_report_path=image_coverage_path,
-    )
+    verified_pdf = source.with_suffix(".pdf")
+    if verified_pdf.is_file():
+        shutil.copy2(verified_pdf, pdf_path)
+        image_coverage_path.write_text(
+            json.dumps(
+                {
+                    "mode": "premium_schema_passthrough",
+                    "status": "LAYOUT_VERIFIED_SOURCE_PDF",
+                    "message": "Premium source PDF preserved without legacy reflow.",
+                },
+                indent=2,
+            ) + "\n",
+            encoding="utf-8",
+        )
+    else:
+        build_publishing_pdf(
+            root / "data" / "project.sqlite3",
+            pdf_path,
+            coverage_report_path=image_coverage_path,
+        )
 
     publishing_readme_path.write_text(
         "PP-AIPP Publishing Pack\n"

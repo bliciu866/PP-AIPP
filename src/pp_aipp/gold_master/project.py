@@ -50,6 +50,18 @@ class GoldMasterProject:
                 (self.root / directory).mkdir(parents=True, exist_ok=True)
         destination = self.root / "manuscript" / source_path.name
         shutil.copy2(source_path, destination)
+        # Premium Gold Masters are distributed with a layout-verified PDF next to
+        # the DOCX. Keep that companion under controlled source so Build/Export
+        # can preserve the complete editorial package without regenerating it
+        # through the legacy recipe-only renderer.
+        preview_candidates = (
+            source_path.with_name(f"{source_path.stem}_Preview.pdf"),
+            source_path.with_suffix(".pdf"),
+        )
+        for preview in preview_candidates:
+            if preview.is_file():
+                shutil.copy2(preview, destination.with_suffix(".preview.pdf"))
+                break
         manifest = GoldMasterManifest.from_source(destination, GoldMasterSchema.VERSION)
         manifest.write(self.root / "manifest.json")
         if not (self.root / "project.json").exists():
