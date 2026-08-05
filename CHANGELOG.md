@@ -1,6 +1,14 @@
 
 # Changelog
 
+## 3.0.0b7 — 2026-08-05
+
+- Added Gold Master Premium v5 schema detection.
+- Preserved the complete controlled DOCX during Build Book instead of applying legacy recipe-only reflow.
+- Preserved the layout-verified Premium PDF when it is supplied beside the Gold Master DOCX.
+- Added explicit Build Console confirmation for Premium Schema passthrough mode.
+- Added pipeline and export regression coverage for premium source preservation.
+
 ## 3.0.0b6.post9 — 2026-08-05
 
 - Added Beta B2.8 Local Free AI recipe-photo generation with Stable Diffusion.
