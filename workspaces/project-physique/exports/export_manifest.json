@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "application": "PP-AIPP",
+  "application_version": "3.0.0b11",
+  "created_utc": "2026-08-06T14:06:39.669388+00:00",
+  "book": "Project_Physique_30_Days_Fat_Loss_Export.docx",
+  "files": [
+    {
+      "path": "Project_Physique_30_Days_Fat_Loss_Export.docx",
+      "bytes": 90213,
+      "sha256": "e2e79e53dfbe751ccb9186d05d4b49ecc32c1ac8049f88a38a0d1a614ed81d2c"
+    },
+    {
+      "path": "Project_Physique_30_Days_Fat_Loss_Print.pdf",
+      "bytes": 340609,
+      "sha256": "05872b79c7ecb94c23a12043615d8f2b553c55f6c81f5247bd21f7dc62ae6f3d"
+    },
+    {
+      "path": "PUBLISHING_README.txt",
+      "bytes": 409,
+      "sha256": "68fedc893b33a03e1852853e37640e5472f6c71181213fc4dbdcc8d99ebf7a7e"
+    },
+    {
+      "path": "image_coverage_report.json",
+      "bytes": 1467,
+      "sha256": "89cb4a4e18a747da3900926fed995243b41f1e9afe5dd8662a40a026a03ca35f"
+    },
+    {
+      "path": "qa/gold_master_import_report.json",
+      "bytes": 480468,
+      "sha256": "33754563453506e3ee6d9e58e0eeaf957713f70a4df172076835e53654e0f95a"
+    },
+    {
+      "path": "qa/layout_build_report.json",
+      "bytes": 214,
+      "sha256": "fba19f8f54a69efc6d452ff9c37e4f3f18c74716870f9c64ac6b33a2143ae087"
+    }
+  ]
+}

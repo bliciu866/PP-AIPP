@@ -1,6 +1,13 @@
 
 # Changelog
 
+## 3.0.0b11.post2 — 2026-08-06
+
+- Wrapped long recipe names safely inside every weekly plan cell.
+- Removed recipe-index title truncation and expanded each index to three readable parts.
+- Updated contents navigation for the verified 112-page publishing PDF.
+- Runtime remains `3.0.0b11`; this is the B3.4.2 layout QA hotfix.
+
 ## 3.0.0b11.post1 — 2026-08-06
 
 - Updated the export-manifest regression expectation from `3.0.0b10` to `3.0.0b11`.

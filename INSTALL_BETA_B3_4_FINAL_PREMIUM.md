@@ -11,7 +11,7 @@
 9. Import the prepared PP-R001–PP-R080 photography folder when available.
 10. Click `Build Book`, then `Export`.
 
-The B3.4 print PDF contains 108 pages for an 80-recipe collection. The image
+The B3.4.2 print PDF contains 112 pages for an 80-recipe collection. The image
 coverage report is the release gate: commercial export requires 80 images found
 and 0 missing. Run a final KDP preview before publication.
 

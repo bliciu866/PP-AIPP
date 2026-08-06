@@ -2,7 +2,7 @@
 
 ## Complete premium publishing PDF
 
-B3.4 produces a complete 108-page luxury photo edition: publishing pages, programme guidance,
+B3.4.2 produces a complete 112-page luxury photo edition: publishing pages, programme guidance,
 the full Day 1–30 plan, five weekly shopping lists, four recipe indexes, 80
 photo-led recipe pages, a 30-day tracker and FAQ. Every recipe includes five
 editorial cards plus time, difficulty, fibre, freezer, vegetarian and allergen

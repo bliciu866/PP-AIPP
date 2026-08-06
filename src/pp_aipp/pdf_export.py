@@ -199,9 +199,9 @@ def _draw_publishing_pages(pdf) -> None:
     ])
     _draw_text_page(pdf, "Navigate the programme", "Contents", [
         ("Start strong · pages 6–8", "30-Day Success Guide, Nutrition Basics and the UK Shopping System."),
-        ("Plan and shop · pages 9–26", "Five weekly meal-plan pages, five consolidated shopping lists and four practical recipe indexes."),
-        ("Cook · pages 27–106", "Eighty photo-led recipes with complete macros, ingredients, method, meal prep and recipe-specific editorial guidance."),
-        ("Track and continue · pages 107–108", "30-Day Progress Tracker and Frequently Asked Questions."),
+        ("Plan and shop · pages 9–30", "Five weekly meal-plan pages, five consolidated shopping lists and four practical recipe indexes."),
+        ("Cook · pages 31–110", "Eighty photo-led recipes with complete macros, ingredients, method, meal prep and recipe-specific editorial guidance."),
+        ("Track and continue · pages 111–112", "30-Day Progress Tracker and Frequently Asked Questions."),
     ])
     _draw_text_page(pdf, "Made for consistency", "About Project Physique™", [
         ("Our purpose", "Project Physique™ creates practical nutrition systems that turn a goal into repeatable daily action. This programme is designed around familiar UK ingredients, clear portions and meals people can cook again."),
@@ -379,6 +379,14 @@ def _schedule(recipes: list[dict]) -> list[tuple[int, dict, dict, dict]]:
 
 
 def _draw_plan_pages(pdf, schedule) -> None:
+    cell_style = ParagraphStyle(
+        "PlanCell",
+        fontName="Helvetica",
+        fontSize=6.5,
+        leading=7.7,
+        textColor=CHARCOAL,
+        spaceAfter=0,
+    )
     for week, start in enumerate(range(0, 30, 7), 1):
         days = schedule[start:start + 7]
         y = _page_heading(pdf, "Your programme", f"Week {week} · Day {days[0][0]}–{days[-1][0]}", "A complete daily rhythm; swap within the same meal category when useful.")
@@ -386,11 +394,17 @@ def _draw_plan_pages(pdf, schedule) -> None:
         widths = [0.45 * inch, 2.0 * inch, 2.0 * inch, 2.0 * inch]
         rows = [["DAY", "BREAKFAST", "LUNCH", "DINNER"]]
         for day, breakfast, lunch, dinner in days:
-            rows.append([str(day), f"{breakfast['recipe_id']}\n{breakfast['title']}", f"{lunch['recipe_id']}\n{lunch['title']}", f"{dinner['recipe_id']}\n{dinner['title']}"])
-        table = Table(rows, colWidths=widths, rowHeights=[0.32 * inch] + [0.7 * inch] * len(days))
-        table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), NAVY), ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("BACKGROUND", (0, 1), (-1, -1), colors.white), ("GRID", (0, 0), (-1, -1), 0.35, colors.HexColor("#D8CBAE")), ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("FONTNAME", (0, 1), (0, -1), "Helvetica-Bold"), ("FONTSIZE", (0, 0), (-1, -1), 7), ("LEADING", (0, 0), (-1, -1), 8.5), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("LEFTPADDING", (0, 0), (-1, -1), 5)]))
+            rows.append([
+                str(day),
+                Paragraph(f"<b>{_text(breakfast['recipe_id'])}</b><br/>{_text(breakfast['title'])}", cell_style),
+                Paragraph(f"<b>{_text(lunch['recipe_id'])}</b><br/>{_text(lunch['title'])}", cell_style),
+                Paragraph(f"<b>{_text(dinner['recipe_id'])}</b><br/>{_text(dinner['title'])}", cell_style),
+            ])
+        table_height = (0.32 + 0.72 * len(days)) * inch
+        table = Table(rows, colWidths=widths, rowHeights=[0.32 * inch] + [0.72 * inch] * len(days))
+        table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), NAVY), ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("BACKGROUND", (0, 1), (-1, -1), colors.white), ("GRID", (0, 0), (-1, -1), 0.35, colors.HexColor("#D8CBAE")), ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("FONTNAME", (0, 1), (0, -1), "Helvetica-Bold"), ("FONTSIZE", (0, 0), (-1, -1), 7), ("LEADING", (0, 0), (-1, -1), 8.5), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("LEFTPADDING", (0, 0), (-1, -1), 5), ("RIGHTPADDING", (0, 1), (-1, -1), 5), ("TOPPADDING", (0, 1), (-1, -1), 4), ("BOTTOMPADDING", (0, 1), (-1, -1), 4)]))
         table.wrapOn(pdf, sum(widths), 6 * inch)
-        table.drawOn(pdf, x, y - (0.32 + 0.7 * len(days)) * inch)
+        table.drawOn(pdf, x, y - table_height)
         pdf.showPage()
 
 
@@ -426,15 +440,22 @@ def _draw_indexes(pdf, recipes: list[dict]) -> None:
     ]
     for title, key, label in indexes:
         ordered = sorted(recipes, key=key)
-        for chunk_index in range(0, len(ordered), 40):
-            chunk = ordered[chunk_index:chunk_index + 40]
-            y = _page_heading(pdf, "Find your fit", title, f"Part {chunk_index // 40 + 1} of 2")
+        entries_per_page = 30
+        column_size = 15
+        part_count = (len(ordered) + entries_per_page - 1) // entries_per_page
+        for chunk_index in range(0, len(ordered), entries_per_page):
+            chunk = ordered[chunk_index:chunk_index + entries_per_page]
+            y = _page_heading(
+                pdf,
+                "Find your fit",
+                title,
+                f"Part {chunk_index // entries_per_page + 1} of {part_count}",
+            )
             for i, recipe in enumerate(chunk):
-                x = 0.65 * inch if i < 20 else 4.15 * inch
-                yy = y - (i % 20) * 0.27 * inch
-                pdf.setFillColor(CHARCOAL)
-                pdf.setFont("Helvetica", 7.6)
-                pdf.drawString(x, yy, label(recipe)[:62])
+                x = 0.65 * inch if i < column_size else 4.15 * inch
+                yy = y - (i % column_size) * 0.39 * inch
+                lines = _wrap_canvas_text(pdf, label(recipe), "Helvetica", 7.2, 3.05 * inch)
+                _draw_lines(pdf, lines, x, yy, "Helvetica", 7.2, 8.2, CHARCOAL, max_lines=2)
             pdf.showPage()
 
 
