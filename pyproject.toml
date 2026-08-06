@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pp-aipp"
-version = "3.0.0b10"
+version = "3.0.0b11"
 description = "Project Physique AI Publishing Platform"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -31,7 +31,7 @@ pp-aipp-desktop = "pp_aipp.desktop.app:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-pp_aipp = ["resources/*.yaml"]
+pp_aipp = ["resources/*.yaml", "resources/fonts/*.ttf"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

@@ -63,7 +63,7 @@ jobs:
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PP-AIPP-Windows-beta.6-B2.8
+          name: PP-AIPP-Windows-beta.11-B3.4
           path: |
             dist/PP-AIPP.exe
             PP-AIPP-Windows-Portable.zip

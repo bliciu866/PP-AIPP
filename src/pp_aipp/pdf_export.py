@@ -15,6 +15,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from reportlab.platypus import (
     Image,
@@ -38,6 +40,20 @@ NAVY = colors.HexColor("#102A43")
 GOLD = colors.HexColor("#B98216")
 CREAM = colors.HexColor("#F7F2E8")
 PALE_BLUE = colors.HexColor("#EAF0F5")
+
+
+def _register_publishing_fonts() -> None:
+    """Embed deterministic fonts so KDP and desktop viewers render identically."""
+    font_dir = Path(__file__).resolve().parent / "resources" / "fonts"
+    regular = font_dir / "DejaVuSans.ttf"
+    bold = font_dir / "DejaVuSans-Bold.ttf"
+    if regular.is_file() and bold.is_file():
+        pdfmetrics.registerFont(TTFont("Helvetica", regular))
+        pdfmetrics.registerFont(TTFont("Helvetica-Bold", bold))
+        pdfmetrics.registerFont(TTFont("Helvetica-Oblique", regular))
+
+
+_register_publishing_fonts()
 
 
 def _text(value: object) -> str:
@@ -134,16 +150,16 @@ def _draw_cover(pdf) -> None:
     pdf.setFont("Helvetica-Bold", 13)
     pdf.drawString(1.05 * inch, height - 1.15 * inch, "PROJECT PHYSIQUE(TM)")
     pdf.setFillColor(colors.white)
-    pdf.setFont("Helvetica-Bold", 38)
+    pdf.setFont("Helvetica-Bold", 42)
     pdf.drawString(1.05 * inch, height - 2.35 * inch, "30 DAYS")
     pdf.drawString(1.05 * inch, height - 2.92 * inch, "FAT LOSS")
     pdf.setFillColor(GOLD)
-    pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(1.06 * inch, height - 3.38 * inch, "LUXURY PHOTO EDITION")
+    pdf.setFont("Helvetica-Bold", 15)
+    pdf.drawString(1.06 * inch, height - 3.38 * inch, "PREMIUM NUTRITION PROGRAMME")
     pdf.setFillColor(colors.white)
     pdf.setFont("Helvetica", 11)
-    pdf.drawString(1.06 * inch, height - 4.08 * inch, "80 nutrition-verified recipes")
-    pdf.drawString(1.06 * inch, height - 4.34 * inch, "Designed for real UK kitchens")
+    pdf.drawString(1.06 * inch, height - 4.08 * inch, "30-day meal plan  /  80 nutrition-verified recipes")
+    pdf.drawString(1.06 * inch, height - 4.34 * inch, "Shopping lists, progress tools and real UK ingredients")
     pdf.setFillColor(colors.HexColor("#D7E2EA"))
     pdf.setFont("Helvetica", 9)
     pdf.drawString(1.06 * inch, 1.12 * inch, "PREMIUM EDITORIAL SYSTEM  /  UK ENGLISH  /  CoFID-ALIGNED")
@@ -172,6 +188,26 @@ def _draw_collection_intro(pdf) -> None:
     pdf.setFillColor(GOLD)
     pdf.rect(2.2 * inch, 1.5 * inch, width - 4.4 * inch, 0.04 * inch, fill=1, stroke=0)
     pdf.showPage()
+
+
+def _draw_publishing_pages(pdf) -> None:
+    """Add consumer-facing navigation, legal and brand pages before the programme."""
+    _draw_text_page(pdf, "Before you begin", "Important Information", [
+        ("Copyright", "Copyright © 2026 Project Physique™. All rights reserved. This publication may not be reproduced, distributed or transmitted without prior written permission, except for brief quotations permitted by law."),
+        ("Health and nutrition disclaimer", "This programme provides general educational information and is not individual medical or dietetic advice. Nutritional needs vary. Consult an appropriately qualified professional before material dietary change if you are pregnant, under 18, managing a medical condition, taking prescribed medication or have a history of disordered eating."),
+        ("Food safety and allergens", "Allergen notes are screening aids only. Always check current packaging and avoid cross-contamination according to your needs. Chill cooked food promptly, keep the refrigerator at 5°C or below and cook animal products thoroughly."),
+    ])
+    _draw_text_page(pdf, "Navigate the programme", "Contents", [
+        ("Start strong · pages 6–8", "30-Day Success Guide, Nutrition Basics and the UK Shopping System."),
+        ("Plan and shop · pages 9–26", "Five weekly meal-plan pages, five consolidated shopping lists and four practical recipe indexes."),
+        ("Cook · pages 27–106", "Eighty photo-led recipes with complete macros, ingredients, method, meal prep and recipe-specific editorial guidance."),
+        ("Track and continue · pages 107–108", "30-Day Progress Tracker and Frequently Asked Questions."),
+    ])
+    _draw_text_page(pdf, "Made for consistency", "About Project Physique™", [
+        ("Our purpose", "Project Physique™ creates practical nutrition systems that turn a goal into repeatable daily action. This programme is designed around familiar UK ingredients, clear portions and meals people can cook again."),
+        ("How to use this book", "Follow the suggested 30-day rhythm or swap within the same meal category. Use the stated serving as your baseline, keep calorie-dense ingredients measured and repeat the recipes that make consistency easier."),
+        ("Production standard", "Recipe nutrition is aligned to the McCance and Widdowson Composition of Foods Integrated Dataset 2021. Documented proxy decisions remain in the internal Nutrition Lock record rather than interrupting the reader experience."),
+    ])
 
 
 def _meta(recipe: dict, key: str, default=""):
@@ -216,6 +252,61 @@ def _recipe_traits(recipe: dict) -> dict:
         "vegetarian": bool(_meta(recipe, "vegetarian_option", vegetarian)),
         "freezer": bool(_meta(recipe, "freezer_friendly", freezer)),
         "allergens": _meta(recipe, "allergen_note", ", ".join(allergens) or "No major allergens identified; check labels"),
+    }
+
+
+def _contains(ingredients: str, *terms: str) -> bool:
+    return any(term in ingredients for term in terms)
+
+
+def _editorial_content(recipe: dict) -> dict[str, str]:
+    """Create concise recipe-aware guidance when a legacy Gold Master has no v5 cards."""
+    title = str(recipe.get("title") or "this recipe")
+    meal = str(recipe.get("meal") or "meal").lower()
+    ingredient_names = [str(i.get("name", "")).strip() for i in recipe.get("ingredients", [])]
+    ingredients = " ".join(name.lower() for name in ingredient_names)
+    minor = ("salt", "pepper", "oil", "garlic", "cinnamon", "herb", "juice", "zest")
+    anchors = [name for name in ingredient_names if not any(word in name.lower() for word in minor)]
+    focus = " and ".join(anchors[:2]) if anchors else title
+
+    if _contains(ingredients, "salmon", "cod", "haddock", "tuna", "mackerel", "prawn"):
+        chef = "Pat the seafood dry before seasoning so it colours cleanly instead of steaming."
+        mistake = "Overcooking seafood; remove it as soon as it is opaque and flakes easily."
+        swap = "Use another firm fish or seafood option in the same measured quantity."
+    elif _contains(ingredients, "chicken", "turkey", "beef", "pork"):
+        chef = "Cut the protein into even pieces and let the pan reheat before the next batch."
+        mistake = "Crowding the pan, which traps moisture and prevents proper browning."
+        swap = "Use lean turkey, chicken or a plant-based mince in the same measured quantity."
+    elif _contains(ingredients, "tofu", "lentil", "chickpea", "bean", "aubergine"):
+        chef = "Build flavour in layers: brown the base ingredients before adding liquid or sauce."
+        mistake = "Adding everything at once, which leaves the vegetables soft and the flavour flat."
+        swap = "Exchange lentils, chickpeas, beans or firm tofu gram for gram where practical."
+    elif _contains(ingredients, "oats", "quark", "cottage cheese", "yogurt", "yoghurt"):
+        chef = "Rest the mixture before serving so the grains hydrate and the texture becomes creamy."
+        mistake = "Guessing the toppings; weigh nuts, seeds and spreads because portions add up quickly."
+        swap = "Swap quark, skyr or Greek-style yogurt by weight and recheck the nutrition label."
+    elif _contains(ingredients, "egg"):
+        chef = "Use moderate heat and stop cooking while the eggs still look slightly glossy."
+        mistake = "Using high heat, which makes eggs firm before the centre cooks evenly."
+        swap = "Replace part of the egg with measured egg whites for a lighter protein option."
+    else:
+        chef = "Prepare and measure every ingredient before heating the pan for a calm, even cook."
+        mistake = "Changing several quantities while cooking and losing the stated nutrition balance."
+        swap = "Use a similar lean protein or wholegrain in the same measured cooked state."
+
+    if meal == "breakfast":
+        serving = f"Serve {title} with water, tea or coffee and keep extra toppings measured."
+    elif _contains(ingredients, "curry", "stew", "tray", "rice", "pasta", "couscous"):
+        serving = "Finish with fresh herbs or lemon and add a generous side of non-starchy vegetables."
+    else:
+        serving = "Plate with crisp seasonal vegetables and a squeeze of lemon for freshness."
+
+    return {
+        "chef_tip": str(recipe.get("chef_tip") or f"With {focus}, {chef[0].lower()}{chef[1:]}"),
+        "common_mistake": str(_meta(recipe, "common_mistake") or f"For {focus}, avoid {mistake[0].lower()}{mistake[1:]}"),
+        "ingredient_swap": str(recipe.get("ingredient_swap") or f"Swap option for {focus}: {swap[0].lower()}{swap[1:]}"),
+        "meal_prep": str(recipe.get("meal_prep") or "Prepare components ahead, chill promptly and assemble when needed."),
+        "serving_suggestion": str(_meta(recipe, "serving_suggestion") or serving),
     }
 
 
@@ -445,10 +536,11 @@ def _draw_recipe_page(pdf, recipe: dict, image_path: Path | None, page_number: i
     nutrition_items = [
         ("KCAL", nutrition.get("energy_kcal", "-")),
         ("PROTEIN", f"{nutrition.get('protein_g', '-')} g"),
+        ("CARBS", f"{nutrition.get('carbohydrate_g', '-')} g"),
+        ("FAT", f"{nutrition.get('fat_g', '-')} g"),
         ("FIBRE", f"{nutrition.get('fibre_g', '-')} g"),
-        ("PREP / COOK", f"{traits['prep']} / {traits['cook']} min"),
     ]
-    card_w = (text_w - 3 * 4) / 4
+    card_w = (text_w - 4 * 3) / 5
     for index, (label, value) in enumerate(nutrition_items):
         card_x = info_x + index * (card_w + 4)
         pdf.setFillColor(SAGE)
@@ -457,16 +549,17 @@ def _draw_recipe_page(pdf, recipe: dict, image_path: Path | None, page_number: i
         pdf.setFont("Helvetica-Bold", 6)
         pdf.drawCentredString(card_x + card_w / 2, y - 0.14 * inch, label)
         pdf.setFillColor(NAVY)
-        pdf.setFont("Helvetica-Bold", 8)
+        pdf.setFont("Helvetica-Bold", 7.4)
         pdf.drawCentredString(card_x + card_w / 2, y - 0.34 * inch, str(value))
     y -= 0.67 * inch
 
+    editorial = _editorial_content(recipe)
     panels = [
-        ("CHEF'S TIP", recipe.get("chef_tip")),
-        ("COMMON MISTAKE", _meta(recipe, "common_mistake")),
-        ("INGREDIENT SWAP", recipe.get("ingredient_swap")),
-        ("MEAL PREP", recipe.get("meal_prep")),
-        ("SERVING SUGGESTION", _meta(recipe, "serving_suggestion") or recipe.get("serving")),
+        ("CHEF'S TIP", editorial["chef_tip"]),
+        ("COMMON MISTAKE", editorial["common_mistake"]),
+        ("INGREDIENT SWAP", editorial["ingredient_swap"]),
+        ("MEAL PREP", editorial["meal_prep"]),
+        ("SERVING SUGGESTION", editorial["serving_suggestion"]),
     ]
     for label, value in panels:
         if not value:
@@ -541,6 +634,7 @@ def _build_luxury_pdf(database: Path, output: Path, coverage_report_path=None) -
     pdf.setAuthor("Project Physique")
     _draw_cover(pdf)
     _draw_collection_intro(pdf)
+    _draw_publishing_pages(pdf)
     _draw_programme_pages(pdf)
     schedule = _schedule(recipes)
     _draw_plan_pages(pdf, schedule)

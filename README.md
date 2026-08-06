@@ -1,13 +1,22 @@
-# PP-AIPP v3.0.0-beta.10 B3.3 — Complete Premium Programme
+# PP-AIPP v3.0.0-beta.11 B3.4 — Final Premium Publishing Polish
 
 ## Complete premium publishing PDF
 
-B3.3 produces a complete 105-page luxury photo edition: programme guidance,
+B3.4 produces a complete 108-page luxury photo edition: publishing pages, programme guidance,
 the full Day 1–30 plan, five weekly shopping lists, four recipe indexes, 80
 photo-led recipe pages, a 30-day tracker and FAQ. Every recipe includes five
 editorial cards plus time, difficulty, fibre, freezer, vegetarian and allergen
-guidance. The cover is intentionally retained as the current working cover so
-it can be replaced during the final visual polish.
+guidance. Legacy Gold Masters receive recipe-aware editorial cards automatically,
+while authored premium cards are preserved. Every recipe page now presents the
+complete energy, protein, carbohydrate, fat and fibre panel.
+
+## B3.4 publishing polish
+
+- Consumer-ready copyright, health disclaimer and allergen/food-safety guidance.
+- Practical contents and About Project Physique™ pages.
+- Stronger premium programme cover message.
+- Five useful editorial cards on every recipe, including v4.1 legacy imports.
+- Clean release packaging without `.git`, `.venv`, caches or local databases.
 
 ## Gold Master Premium v5 support
 

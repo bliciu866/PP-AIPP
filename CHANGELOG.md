@@ -1,6 +1,16 @@
 
 # Changelog
 
+## 3.0.0b11 — 2026-08-06
+
+- Added the B3.4 Final Premium Publishing Polish engine.
+- Added consumer-ready copyright, health disclaimer, contents and Project Physique pages.
+- Added deterministic recipe-specific Chef's Tips, Common Mistakes, Ingredient Swaps and Serving Suggestions for legacy Gold Masters while preserving authored premium cards when supplied.
+- Restored the complete five-value macro panel: energy, protein, carbohydrate, fat and fibre.
+- Upgraded the cover positioning and clarified the complete 30-day programme offer.
+- Verified a 108-page, 80-recipe publishing PDF from Gold Master v4.1.
+- Added clean source-package guidance so release ZIPs exclude Git history, virtual environments, caches, logs and local databases.
+
 ## 3.0.0b10 — 2026-08-05
 
 - Added the B3.3 Complete Premium Programme publishing engine.
