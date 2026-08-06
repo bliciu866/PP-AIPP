@@ -8,16 +8,21 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: pp-aipp-windows-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test-and-build:
     runs-on: windows-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: "pip"
@@ -61,7 +66,7 @@ jobs:
           Compress-Archive -Path package/* -DestinationPath PP-AIPP-Windows-Portable.zip -Force
 
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: PP-AIPP-Windows-beta.11-B3.6
           path: |
