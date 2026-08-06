@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 3.0.0b11.post1 — 2026-08-06
+
+- Updated the export-manifest regression expectation from `3.0.0b10` to `3.0.0b11`.
+- Fixes the B3.4 GitHub Actions failure across Python 3.11, 3.12 and 3.13.
+- Runtime and publishing output remain unchanged at `3.0.0b11`.
+
 ## 3.0.0b11 — 2026-08-06
 
 - Added the B3.4 Final Premium Publishing Polish engine.
