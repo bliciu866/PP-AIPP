@@ -2,7 +2,7 @@ import json
 
 from pp_aipp.domain import Ingredient, MethodStep, Nutrition, ProjectDatabase, Recipe
 from pp_aipp.pdf_export import _editorial_content, build_publishing_pdf
-from pp_aipp.publication_qa import polished_method_steps, polish_method_text
+from pp_aipp.publication_qa import polish_method_text, polished_method_steps
 
 
 def test_pdf_export_builds_portable_pdf(tmp_path):
