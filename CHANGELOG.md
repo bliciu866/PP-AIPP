@@ -1,6 +1,16 @@
 
 # Changelog
 
+## 3.0.0b11.post3 — 2026-08-06
+
+- Added the approved Project Physique white, green and charcoal commercial cover.
+- Added a photo-led collection opener built from verified campaign assets.
+- Applied the Project Physique Forest Green, Charcoal and Fresh Lime identity across the PDF.
+- Upgraded publishing and programme pages with branded content panels and footers.
+- Consolidated shopping-list duplicates such as `Apple` and `Apple, flesh and skin`.
+- Embedded the B3.5 brand artwork and fonts in both Python packages and the Windows EXE.
+- Runtime remains `3.0.0b11`; this is the B3.5 Final Brand & Cover Polish release.
+
 ## 3.0.0b11.post2 — 2026-08-06
 
 - Wrapped long recipe names safely inside every weekly plan cell.

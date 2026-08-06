@@ -31,7 +31,7 @@ pp-aipp-desktop = "pp_aipp.desktop.app:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-pp_aipp = ["resources/*.yaml", "resources/fonts/*.ttf"]
+pp_aipp = ["resources/*.yaml", "resources/fonts/*.ttf", "resources/brand/*.png"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

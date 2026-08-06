@@ -1,0 +1,741 @@
+{
+  "schema_version": 3,
+  "campaign": "PP-R001-PP-R080",
+  "latest_batch_number": 1,
+  "expected_images": 80,
+  "imported_this_batch": 80,
+  "replaced_this_batch": 0,
+  "auto_prepared_this_batch": 0,
+  "imported_images": 80,
+  "ready_images": 80,
+  "images_needing_attention": 0,
+  "rejected_files": 0,
+  "missing_images": 0,
+  "coverage_percent": 100.0,
+  "next_missing_recipe_ids": [],
+  "batch_history_file": "photography_batch_history.json",
+  "assets": [
+    {
+      "recipe_id": "PP-R001",
+      "filename": "PP-R001.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R002",
+      "filename": "PP-R002.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R003",
+      "filename": "PP-R003.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R004",
+      "filename": "PP-R004.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R005",
+      "filename": "PP-R005.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R006",
+      "filename": "PP-R006.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R007",
+      "filename": "PP-R007.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R008",
+      "filename": "PP-R008.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R009",
+      "filename": "PP-R009.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R010",
+      "filename": "PP-R010.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R011",
+      "filename": "PP-R011.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R012",
+      "filename": "PP-R012.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R013",
+      "filename": "PP-R013.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R014",
+      "filename": "PP-R014.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R015",
+      "filename": "PP-R015.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R016",
+      "filename": "PP-R016.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R017",
+      "filename": "PP-R017.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R018",
+      "filename": "PP-R018.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R019",
+      "filename": "PP-R019.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R020",
+      "filename": "PP-R020.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R021",
+      "filename": "PP-R021.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R022",
+      "filename": "PP-R022.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R023",
+      "filename": "PP-R023.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R024",
+      "filename": "PP-R024.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R025",
+      "filename": "PP-R025.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R026",
+      "filename": "PP-R026.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R027",
+      "filename": "PP-R027.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R028",
+      "filename": "PP-R028.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R029",
+      "filename": "PP-R029.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R030",
+      "filename": "PP-R030.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R031",
+      "filename": "PP-R031.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R032",
+      "filename": "PP-R032.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R033",
+      "filename": "PP-R033.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R034",
+      "filename": "PP-R034.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R035",
+      "filename": "PP-R035.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R036",
+      "filename": "PP-R036.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R037",
+      "filename": "PP-R037.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R038",
+      "filename": "PP-R038.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R039",
+      "filename": "PP-R039.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R040",
+      "filename": "PP-R040.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R041",
+      "filename": "PP-R041.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R042",
+      "filename": "PP-R042.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R043",
+      "filename": "PP-R043.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R044",
+      "filename": "PP-R044.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R045",
+      "filename": "PP-R045.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R046",
+      "filename": "PP-R046.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R047",
+      "filename": "PP-R047.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R048",
+      "filename": "PP-R048.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R049",
+      "filename": "PP-R049.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R050",
+      "filename": "PP-R050.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R051",
+      "filename": "PP-R051.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R052",
+      "filename": "PP-R052.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R053",
+      "filename": "PP-R053.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R054",
+      "filename": "PP-R054.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R055",
+      "filename": "PP-R055.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R056",
+      "filename": "PP-R056.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R057",
+      "filename": "PP-R057.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R058",
+      "filename": "PP-R058.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R059",
+      "filename": "PP-R059.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R060",
+      "filename": "PP-R060.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R061",
+      "filename": "PP-R061.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R062",
+      "filename": "PP-R062.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R063",
+      "filename": "PP-R063.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R064",
+      "filename": "PP-R064.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R065",
+      "filename": "PP-R065.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R066",
+      "filename": "PP-R066.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R067",
+      "filename": "PP-R067.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R068",
+      "filename": "PP-R068.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R069",
+      "filename": "PP-R069.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R070",
+      "filename": "PP-R070.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R071",
+      "filename": "PP-R071.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R072",
+      "filename": "PP-R072.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R073",
+      "filename": "PP-R073.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R074",
+      "filename": "PP-R074.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R075",
+      "filename": "PP-R075.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R076",
+      "filename": "PP-R076.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R077",
+      "filename": "PP-R077.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R078",
+      "filename": "PP-R078.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R079",
+      "filename": "PP-R079.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    },
+    {
+      "recipe_id": "PP-R080",
+      "filename": "PP-R080.png",
+      "width": 1200,
+      "height": 1500,
+      "aspect_ratio": 0.8,
+      "status": "READY",
+      "note": "4:5 production asset"
+    }
+  ],
+  "rejected": [],
+  "missing_recipe_ids": []
+}

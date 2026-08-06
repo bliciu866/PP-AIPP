@@ -2,89 +2,329 @@
   "schema_version": 2,
   "layout": "luxury_editorial_photo",
   "total_recipes": 80,
-  "images_found": 0,
-  "images_missing": 80,
-  "found": [],
-  "missing_recipe_ids": [
-    "PP-R001",
-    "PP-R002",
-    "PP-R003",
-    "PP-R004",
-    "PP-R005",
-    "PP-R006",
-    "PP-R007",
-    "PP-R008",
-    "PP-R009",
-    "PP-R010",
-    "PP-R011",
-    "PP-R012",
-    "PP-R013",
-    "PP-R014",
-    "PP-R015",
-    "PP-R016",
-    "PP-R017",
-    "PP-R018",
-    "PP-R019",
-    "PP-R020",
-    "PP-R021",
-    "PP-R022",
-    "PP-R023",
-    "PP-R024",
-    "PP-R025",
-    "PP-R026",
-    "PP-R027",
-    "PP-R028",
-    "PP-R029",
-    "PP-R030",
-    "PP-R031",
-    "PP-R032",
-    "PP-R033",
-    "PP-R034",
-    "PP-R035",
-    "PP-R036",
-    "PP-R037",
-    "PP-R038",
-    "PP-R039",
-    "PP-R040",
-    "PP-R041",
-    "PP-R042",
-    "PP-R043",
-    "PP-R044",
-    "PP-R045",
-    "PP-R046",
-    "PP-R047",
-    "PP-R048",
-    "PP-R049",
-    "PP-R050",
-    "PP-R051",
-    "PP-R052",
-    "PP-R053",
-    "PP-R054",
-    "PP-R055",
-    "PP-R056",
-    "PP-R057",
-    "PP-R058",
-    "PP-R059",
-    "PP-R060",
-    "PP-R061",
-    "PP-R062",
-    "PP-R063",
-    "PP-R064",
-    "PP-R065",
-    "PP-R066",
-    "PP-R067",
-    "PP-R068",
-    "PP-R069",
-    "PP-R070",
-    "PP-R071",
-    "PP-R072",
-    "PP-R073",
-    "PP-R074",
-    "PP-R075",
-    "PP-R076",
-    "PP-R077",
-    "PP-R078",
-    "PP-R079",
-    "PP-R080"
-  ]
+  "images_found": 80,
+  "images_missing": 0,
+  "found": [
+    {
+      "recipe_id": "PP-R001",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R001.png"
+    },
+    {
+      "recipe_id": "PP-R002",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R002.png"
+    },
+    {
+      "recipe_id": "PP-R003",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R003.png"
+    },
+    {
+      "recipe_id": "PP-R004",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R004.png"
+    },
+    {
+      "recipe_id": "PP-R005",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R005.png"
+    },
+    {
+      "recipe_id": "PP-R006",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R006.png"
+    },
+    {
+      "recipe_id": "PP-R007",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R007.png"
+    },
+    {
+      "recipe_id": "PP-R008",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R008.png"
+    },
+    {
+      "recipe_id": "PP-R009",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R009.png"
+    },
+    {
+      "recipe_id": "PP-R010",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R010.png"
+    },
+    {
+      "recipe_id": "PP-R011",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R011.png"
+    },
+    {
+      "recipe_id": "PP-R012",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R012.png"
+    },
+    {
+      "recipe_id": "PP-R013",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R013.png"
+    },
+    {
+      "recipe_id": "PP-R014",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R014.png"
+    },
+    {
+      "recipe_id": "PP-R015",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R015.png"
+    },
+    {
+      "recipe_id": "PP-R016",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R016.png"
+    },
+    {
+      "recipe_id": "PP-R017",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R017.png"
+    },
+    {
+      "recipe_id": "PP-R018",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R018.png"
+    },
+    {
+      "recipe_id": "PP-R019",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R019.png"
+    },
+    {
+      "recipe_id": "PP-R020",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R020.png"
+    },
+    {
+      "recipe_id": "PP-R021",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R021.png"
+    },
+    {
+      "recipe_id": "PP-R022",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R022.png"
+    },
+    {
+      "recipe_id": "PP-R023",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R023.png"
+    },
+    {
+      "recipe_id": "PP-R024",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R024.png"
+    },
+    {
+      "recipe_id": "PP-R025",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R025.png"
+    },
+    {
+      "recipe_id": "PP-R026",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R026.png"
+    },
+    {
+      "recipe_id": "PP-R027",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R027.png"
+    },
+    {
+      "recipe_id": "PP-R028",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R028.png"
+    },
+    {
+      "recipe_id": "PP-R029",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R029.png"
+    },
+    {
+      "recipe_id": "PP-R030",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R030.png"
+    },
+    {
+      "recipe_id": "PP-R031",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R031.png"
+    },
+    {
+      "recipe_id": "PP-R032",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R032.png"
+    },
+    {
+      "recipe_id": "PP-R033",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R033.png"
+    },
+    {
+      "recipe_id": "PP-R034",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R034.png"
+    },
+    {
+      "recipe_id": "PP-R035",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R035.png"
+    },
+    {
+      "recipe_id": "PP-R036",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R036.png"
+    },
+    {
+      "recipe_id": "PP-R037",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R037.png"
+    },
+    {
+      "recipe_id": "PP-R038",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R038.png"
+    },
+    {
+      "recipe_id": "PP-R039",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R039.png"
+    },
+    {
+      "recipe_id": "PP-R040",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R040.png"
+    },
+    {
+      "recipe_id": "PP-R041",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R041.png"
+    },
+    {
+      "recipe_id": "PP-R042",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R042.png"
+    },
+    {
+      "recipe_id": "PP-R043",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R043.png"
+    },
+    {
+      "recipe_id": "PP-R044",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R044.png"
+    },
+    {
+      "recipe_id": "PP-R045",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R045.png"
+    },
+    {
+      "recipe_id": "PP-R046",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R046.png"
+    },
+    {
+      "recipe_id": "PP-R047",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R047.png"
+    },
+    {
+      "recipe_id": "PP-R048",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R048.png"
+    },
+    {
+      "recipe_id": "PP-R049",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R049.png"
+    },
+    {
+      "recipe_id": "PP-R050",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R050.png"
+    },
+    {
+      "recipe_id": "PP-R051",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R051.png"
+    },
+    {
+      "recipe_id": "PP-R052",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R052.png"
+    },
+    {
+      "recipe_id": "PP-R053",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R053.png"
+    },
+    {
+      "recipe_id": "PP-R054",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R054.png"
+    },
+    {
+      "recipe_id": "PP-R055",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R055.png"
+    },
+    {
+      "recipe_id": "PP-R056",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R056.png"
+    },
+    {
+      "recipe_id": "PP-R057",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R057.png"
+    },
+    {
+      "recipe_id": "PP-R058",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R058.png"
+    },
+    {
+      "recipe_id": "PP-R059",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R059.png"
+    },
+    {
+      "recipe_id": "PP-R060",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R060.png"
+    },
+    {
+      "recipe_id": "PP-R061",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R061.png"
+    },
+    {
+      "recipe_id": "PP-R062",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R062.png"
+    },
+    {
+      "recipe_id": "PP-R063",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R063.png"
+    },
+    {
+      "recipe_id": "PP-R064",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R064.png"
+    },
+    {
+      "recipe_id": "PP-R065",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R065.png"
+    },
+    {
+      "recipe_id": "PP-R066",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R066.png"
+    },
+    {
+      "recipe_id": "PP-R067",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R067.png"
+    },
+    {
+      "recipe_id": "PP-R068",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R068.png"
+    },
+    {
+      "recipe_id": "PP-R069",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R069.png"
+    },
+    {
+      "recipe_id": "PP-R070",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R070.png"
+    },
+    {
+      "recipe_id": "PP-R071",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R071.png"
+    },
+    {
+      "recipe_id": "PP-R072",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R072.png"
+    },
+    {
+      "recipe_id": "PP-R073",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R073.png"
+    },
+    {
+      "recipe_id": "PP-R074",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R074.png"
+    },
+    {
+      "recipe_id": "PP-R075",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R075.png"
+    },
+    {
+      "recipe_id": "PP-R076",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R076.png"
+    },
+    {
+      "recipe_id": "PP-R077",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R077.png"
+    },
+    {
+      "recipe_id": "PP-R078",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R078.png"
+    },
+    {
+      "recipe_id": "PP-R079",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R079.png"
+    },
+    {
+      "recipe_id": "PP-R080",
+      "path": "C:\\BLICIU\\PP-AIPP\\workspaces\\project-physique\\images\\PP-R080.png"
+    }
+  ],
+  "missing_recipe_ids": []
 }

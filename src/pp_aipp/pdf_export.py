@@ -31,15 +31,18 @@ from reportlab.platypus import (
 
 from .layout.repository import LayoutRecipeRepository
 
-GREEN = colors.HexColor("#3E8E41")
-SAGE = colors.HexColor("#EAF5EA")
-CHARCOAL = colors.HexColor("#2E2E2E")
+GREEN = colors.HexColor("#1F5E3B")
+LIME = colors.HexColor("#8BC34A")
+SAGE = colors.HexColor("#E8F2EA")
+CHARCOAL = colors.HexColor("#222222")
 GREY = colors.HexColor("#F3F3F3")
 IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".webp")
-NAVY = colors.HexColor("#102A43")
-GOLD = colors.HexColor("#B98216")
-CREAM = colors.HexColor("#F7F2E8")
-PALE_BLUE = colors.HexColor("#EAF0F5")
+NAVY = CHARCOAL
+GOLD = GREEN
+CREAM = colors.HexColor("#F3F3F1")
+PALE_BLUE = colors.HexColor("#EDF4EE")
+
+BRAND_DIR = Path(__file__).resolve().parent / "resources" / "brand"
 
 
 def _register_publishing_fonts() -> None:
@@ -143,50 +146,21 @@ def _draw_lines(pdf, lines: list[str], x: float, y: float, font: str, size: floa
 
 def _draw_cover(pdf) -> None:
     width, height = letter
-    pdf.setFillColor(NAVY)
-    pdf.rect(0, 0, width, height, fill=1, stroke=0)
-    pdf.setFillColor(GOLD)
-    pdf.rect(0.68 * inch, 0.72 * inch, 0.08 * inch, height - 1.44 * inch, fill=1, stroke=0)
-    pdf.setFont("Helvetica-Bold", 13)
-    pdf.drawString(1.05 * inch, height - 1.15 * inch, "PROJECT PHYSIQUE(TM)")
-    pdf.setFillColor(colors.white)
-    pdf.setFont("Helvetica-Bold", 42)
-    pdf.drawString(1.05 * inch, height - 2.35 * inch, "30 DAYS")
-    pdf.drawString(1.05 * inch, height - 2.92 * inch, "FAT LOSS")
-    pdf.setFillColor(GOLD)
-    pdf.setFont("Helvetica-Bold", 15)
-    pdf.drawString(1.06 * inch, height - 3.38 * inch, "PREMIUM NUTRITION PROGRAMME")
-    pdf.setFillColor(colors.white)
-    pdf.setFont("Helvetica", 11)
-    pdf.drawString(1.06 * inch, height - 4.08 * inch, "30-day meal plan  /  80 nutrition-verified recipes")
-    pdf.drawString(1.06 * inch, height - 4.34 * inch, "Shopping lists, progress tools and real UK ingredients")
-    pdf.setFillColor(colors.HexColor("#D7E2EA"))
-    pdf.setFont("Helvetica", 9)
-    pdf.drawString(1.06 * inch, 1.12 * inch, "PREMIUM EDITORIAL SYSTEM  /  UK ENGLISH  /  CoFID-ALIGNED")
+    cover = BRAND_DIR / "cover_b35.png"
+    if not cover.is_file():
+        raise FileNotFoundError(f"B3.5 cover asset missing: {cover}")
+    pdf.drawImage(str(cover), 0, 0, width=width, height=height,
+                  preserveAspectRatio=False, mask="auto")
     pdf.showPage()
 
 
 def _draw_collection_intro(pdf) -> None:
     width, height = letter
-    pdf.setFillColor(CREAM)
-    pdf.rect(0, 0, width, height, fill=1, stroke=0)
-    pdf.setFillColor(GOLD)
-    pdf.setFont("Helvetica-Bold", 10)
-    pdf.drawCentredString(width / 2, height - 1.22 * inch, "THE RECIPE COLLECTION")
-    pdf.setFillColor(NAVY)
-    pdf.setFont("Helvetica-Bold", 27)
-    pdf.drawCentredString(width / 2, height - 2.05 * inch, "Eighty ways to make")
-    pdf.drawCentredString(width / 2, height - 2.48 * inch, "consistency taste better")
-    pdf.setFillColor(CHARCOAL)
-    pdf.setFont("Helvetica", 11)
-    pdf.drawCentredString(width / 2, height - 3.25 * inch, "High-protein food, realistic shopping and repeatable progress.")
-    pdf.setFillColor(NAVY)
-    pdf.roundRect(1.05 * inch, height - 4.35 * inch, width - 2.1 * inch, 0.46 * inch, 5, fill=1, stroke=0)
-    pdf.setFillColor(colors.white)
-    pdf.setFont("Helvetica-Bold", 9)
-    pdf.drawCentredString(width / 2, height - 4.07 * inch, "BREAKFAST     /     LUNCH     /     DINNER")
-    pdf.setFillColor(GOLD)
-    pdf.rect(2.2 * inch, 1.5 * inch, width - 4.4 * inch, 0.04 * inch, fill=1, stroke=0)
+    opener = BRAND_DIR / "collection_opener_b35.png"
+    if not opener.is_file():
+        raise FileNotFoundError(f"B3.5 collection opener asset missing: {opener}")
+    pdf.drawImage(str(opener), 0, 0, width=width, height=height,
+                  preserveAspectRatio=False, mask="auto")
     pdf.showPage()
 
 
@@ -314,6 +288,8 @@ def _page_heading(pdf, eyebrow: str, title: str, subtitle: str = "") -> float:
     width, height = letter
     pdf.setFillColor(CREAM)
     pdf.rect(0, 0, width, height, fill=1, stroke=0)
+    pdf.setFillColor(GREEN)
+    pdf.rect(0, height - 0.12 * inch, width, 0.12 * inch, fill=1, stroke=0)
     pdf.setFillColor(GOLD)
     pdf.setFont("Helvetica-Bold", 9)
     pdf.drawCentredString(width / 2, height - 0.8 * inch, eyebrow.upper())
@@ -338,6 +314,14 @@ def _draw_text_page(pdf, eyebrow: str, title: str, sections: list[tuple[str, str
     y = _page_heading(pdf, eyebrow, title)
     x = 0.8 * inch
     content_w = width - 1.6 * inch
+    panel_top = y + 0.22 * inch
+    panel_bottom = 1.45 * inch
+    pdf.setFillColor(colors.white)
+    pdf.roundRect(x - 0.22 * inch, panel_bottom, content_w + 0.44 * inch,
+                  panel_top - panel_bottom, 8, fill=1, stroke=0)
+    pdf.setFillColor(LIME)
+    pdf.roundRect(x - 0.22 * inch, panel_bottom, 0.07 * inch,
+                  panel_top - panel_bottom, 3, fill=1, stroke=0)
     for heading, body in sections:
         pdf.setFillColor(NAVY)
         pdf.setFont("Helvetica-Bold", 13)
@@ -345,8 +329,13 @@ def _draw_text_page(pdf, eyebrow: str, title: str, sections: list[tuple[str, str
         y -= 0.22 * inch
         lines = _wrap_canvas_text(pdf, body, "Helvetica", 9.2, content_w)
         y = _draw_lines(pdf, lines, x, y, "Helvetica", 9.2, 13, CHARCOAL) - 0.18 * inch
-    pdf.setFillColor(GOLD)
-    pdf.rect(1.7 * inch, 0.55 * inch, width - 3.4 * inch, 0.03 * inch, fill=1, stroke=0)
+    pdf.setFillColor(CHARCOAL)
+    pdf.rect(0, 0, width, 0.92 * inch, fill=1, stroke=0)
+    pdf.setFillColor(LIME)
+    pdf.rect(0, 0.89 * inch, width, 0.03 * inch, fill=1, stroke=0)
+    pdf.setFont("Helvetica-Bold", 8)
+    pdf.drawString(0.7 * inch, 0.42 * inch, "PROJECT PHYSIQUE(TM)")
+    pdf.drawRightString(width - 0.7 * inch, 0.42 * inch, "FUEL BETTER. LIVE STRONGER.")
     pdf.showPage()
 
 
@@ -411,17 +400,22 @@ def _draw_plan_pages(pdf, schedule) -> None:
 def _draw_shopping_pages(pdf, schedule) -> None:
     for week, start in enumerate(range(0, 30, 7), 1):
         selected = schedule[start:start + 7]
-        items: dict[str, tuple[float, str]] = {}
+        items: dict[tuple[str, str], tuple[str, float]] = {}
         for _, *meals in selected:
             for recipe in meals:
                 for item in recipe.get("ingredients", []):
-                    key = str(item["name"]).strip()
+                    raw_name = str(item["name"]).strip()
+                    display_name = re.sub(
+                        r",?\s*flesh and skin$", "", raw_name, flags=re.IGNORECASE
+                    ).strip().title()
                     qty, unit = float(item.get("quantity", 0)), str(item.get("unit", ""))
+                    key = (display_name.casefold(), unit.casefold())
                     previous = items.get(key)
-                    items[key] = ((previous[0] + qty) if previous and previous[1] == unit else qty, unit)
+                    items[key] = (display_name, (previous[1] if previous else 0) + qty)
         y = _page_heading(pdf, "Weekly shopping list", f"Week {week}", "Quantities follow the scheduled single servings; scale for your household and planned leftovers.")
         columns = [[], []]
-        for index, (name, (qty, unit)) in enumerate(sorted(items.items())):
+        ordered_items = sorted(items.items(), key=lambda value: value[1][0].casefold())
+        for index, ((_, unit), (name, qty)) in enumerate(ordered_items):
             columns[index % 2].append(f"□  {qty:g} {unit}  {name}")
         for col, lines in enumerate(columns):
             x = (0.65 + col * 3.85) * inch
