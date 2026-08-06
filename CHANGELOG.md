@@ -1,6 +1,16 @@
 
 # Changelog
 
+## 3.0.0b11.post4 — 2026-08-06
+
+- Completed recipe-aware editorial QA across all 80 recipes.
+- Corrected 122 legacy method steps in 49 recipes, including protein-specific cooking guidance.
+- Removed generic placeholders and mismatched poultry, pork, seafood and plant-based instructions.
+- Added a protected editorial floor so badges cannot overlap long serving guidance.
+- Added complete title, author, subject, keyword and creator metadata to the publishing PDF.
+- Ignored local workspaces, QA renders and generated deliverables to keep GitHub Desktop clean.
+- Runtime remains `3.0.0b11`; this is the B3.6 Final Editorial & Publication QA release.
+
 ## 3.0.0b11.post3 — 2026-08-06
 
 - Added the approved Project Physique white, green and charcoal commercial cover.

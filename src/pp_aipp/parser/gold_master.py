@@ -22,6 +22,7 @@ from ..domain import (
     Recipe,
     RecipeStatus,
 )
+from ..publication_qa import polish_domain_recipe
 
 RECIPE_ID_RE = re.compile(r"^PP-R(\d{3})$")
 NUMBER_RE = re.compile(r"-?\d+(?:[.,]\d+)?")
@@ -243,6 +244,7 @@ class GoldMasterParser:
         if not qa_note:
             issues.append(ParseIssue("WARNING", "QA_MISSING", "QA note missing", recipe_id))
 
+        polish_domain_recipe(recipe)
         recipe.metadata.update(
             {
                 "source_section": recipe_id,

@@ -1,8 +1,8 @@
-# PP-AIPP v3.0.0-beta.11 B3.5 — Final Brand & Cover Polish
+# PP-AIPP v3.0.0-beta.11 B3.6 — Final Editorial & Publication QA
 
 ## Complete premium publishing PDF
 
-B3.5 produces a complete 112-page luxury photo edition: a commercial Project Physique cover,
+B3.6 produces a complete 112-page luxury photo edition: a commercial Project Physique cover,
 photo-led collection opener, branded publishing pages, programme guidance,
 the full Day 1–30 plan, five weekly shopping lists, four recipe indexes, 80
 photo-led recipe pages, a 30-day tracker and FAQ. Every recipe includes five
@@ -10,6 +10,15 @@ editorial cards plus time, difficulty, fibre, freezer, vegetarian and allergen
 guidance. Legacy Gold Masters receive recipe-aware editorial cards automatically,
 while authored premium cards are preserved. Every recipe page now presents the
 complete energy, protein, carbohydrate, fat and fibre panel.
+
+## B3.6 final editorial and publication QA
+
+- Recipe-aware review of all 80 recipes and 399 method steps.
+- 122 corrected legacy steps across 49 recipes.
+- Protein-specific and plant-based cooking guidance with generic placeholders removed.
+- Collision-safe editorial cards and badges on every recipe page.
+- Complete embedded PDF publication metadata and fonts.
+- Clean GitHub working tree after local builds and exports.
 
 ## B3.5 brand and publishing polish
 

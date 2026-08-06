@@ -30,6 +30,7 @@ from reportlab.platypus import (
 )
 
 from .layout.repository import LayoutRecipeRepository
+from .publication_qa import polished_method_steps
 
 GREEN = colors.HexColor("#1F5E3B")
 LIME = colors.HexColor("#8BC34A")
@@ -576,19 +577,21 @@ def _draw_recipe_page(pdf, recipe: dict, image_path: Path | None, page_number: i
         ("MEAL PREP", editorial["meal_prep"]),
         ("SERVING SUGGESTION", editorial["serving_suggestion"]),
     ]
+    badge_y = photo_y + 0.08 * inch
+    editorial_floor = badge_y + 0.20 * inch
     for label, value in panels:
         if not value:
             continue
         pdf.setFillColor(GOLD if label == "CHEF'S TIP" else NAVY)
-        pdf.setFont("Helvetica-Bold", 6.5)
+        pdf.setFont("Helvetica-Bold", 6.2)
         pdf.drawString(info_x, y, label)
-        lines = _wrap_canvas_text(pdf, value, "Helvetica", 7.2, text_w)
-        y = _draw_lines(pdf, lines, info_x, y - 0.13 * inch, "Helvetica", 7.2, 8.5,
-                        CHARCOAL, 3) - 0.08 * inch
-        if y < photo_y + 0.12 * inch:
+        lines = _wrap_canvas_text(pdf, value, "Helvetica", 6.8, text_w)
+        projected = y - 0.12 * inch - min(len(lines), 3) * 7.7 - 0.05 * inch
+        if projected < editorial_floor:
             break
+        y = _draw_lines(pdf, lines, info_x, y - 0.12 * inch, "Helvetica", 6.8, 7.7,
+                        CHARCOAL, 3) - 0.05 * inch
 
-    badge_y = photo_y + 0.08 * inch
     badges = [
         "FREEZER-FRIENDLY" if traits["freezer"] else "BEST FRESH",
         "VEGETARIAN" if traits["vegetarian"] else "VEGETARIAN SWAP AVAILABLE",
@@ -624,7 +627,12 @@ def _draw_recipe_page(pdf, recipe: dict, image_path: Path | None, page_number: i
         ing_y = _draw_lines(pdf, wrapped, left_x + 0.13 * inch, ing_y, "Helvetica", 7.2, 8.2,
                             CHARCOAL) - 1.5
     method_y = lower_top - 0.42 * inch
-    for step in recipe.get("method", []):
+    publication_steps = polished_method_steps(
+        str(recipe.get("recipe_id") or ""),
+        recipe.get("method", []),
+        [str(item.get("name", "")) for item in recipe.get("ingredients", [])],
+    )
+    for step in publication_steps:
         line = f"{step['number']}. {step['text']}"
         wrapped = _wrap_canvas_text(pdf, line, "Helvetica", 7.1, col_w - 0.26 * inch)
         if method_y - len(wrapped) * 8 < lower_bottom + 0.08 * inch:
@@ -647,6 +655,11 @@ def _build_luxury_pdf(database: Path, output: Path, coverage_report_path=None) -
     pdf = canvas.Canvas(str(output), pagesize=letter, pageCompression=1)
     pdf.setTitle("Project Physique - 30 Days Fat Loss - Luxury Photo Edition")
     pdf.setAuthor("Project Physique")
+    pdf.setSubject("80 nutrition-verified recipes and a 30-day meal plan for the UK market")
+    pdf.setKeywords(
+        "Project Physique, 30 Days Fat Loss, meal plan, high protein, UK nutrition"
+    )
+    pdf.setCreator("PP-AIPP 3.0.0b11 B3.6")
     _draw_cover(pdf)
     _draw_collection_intro(pdf)
     _draw_publishing_pages(pdf)
